@@ -1,0 +1,23 @@
+@import "../../scss/_variables.scss";
+
+.button {
+  border: none;
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 5px;
+}
+
+// COLORS
+.info {
+  background-color: $info;
+}
+
+.danger {
+  background-color: $danger;
+}
+
+// WIDTH
+.stretch {
+  width: 100%;
+  display: block;
+}

@@ -1,0 +1,60 @@
+@import "../../../scss/_variables.scss";
+
+.signup {
+  &__branding {
+    padding-top: 30px;
+  }
+
+  &__form {
+    padding-top: 50px;
+    max-width: 80vw;
+    width: 400px;
+    margin: 0 auto;
+  }
+
+  &__imgPlaceholder {
+    width: 90px;
+    height: 90px;
+    position: relative;
+    border-radius: 50%;
+    border: 2px solid $secondary;
+    margin: 0 auto 30px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba($color: #222, $alpha: 0.8);
+    }
+
+    svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 30px;
+      height: 30px;
+      fill: $secondary;
+    }
+
+    .signup__imgPreview {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+    }
+  }
+
+  form {
+    input {
+      background-color: #3e3c3e;
+      border: none;
+      outline: none;
+      color: #fff;
+      margin-bottom: 20px;
+
+      &:focus {
+        background-color: #3e3c3e;
+        color: #fff;
+      }
+    }
+  }
+}
