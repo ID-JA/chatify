@@ -1,5 +1,4 @@
-import React, { useState, useRef } from "react";
-import { FaCamera } from "react-icons/fa";
+import React, { useState } from "react";
 import { Container } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 
@@ -61,10 +60,16 @@ const Signin = () => {
               <Button text="Sign Up" color="info" stretch={true} />
             </Form.Group>
 
-            <p className="mt-2">
+            <p className="mt-2 mb-0 signin__bottom">
               Don't have an account?{" "}
               <Link className="link" to="/signup">
                 Signup
+              </Link>
+            </p>
+            <p className="signin__bottom">
+              Forgot your account credentials?{" "}
+              <Link className="link" to="/forget-password">
+                Click here
               </Link>
             </p>
           </Form>

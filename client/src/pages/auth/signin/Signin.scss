@@ -1,7 +1,7 @@
 @import "../../../scss/_variables.scss";
 @import "../../../scss/mixins.scss";
 
-.signin {
+.fp {
   height: 100vh;
 
   .container {
@@ -37,6 +37,11 @@
         background-color: #3e3c3e;
         color: #fff;
       }
+    }
+
+    .signin__bottom {
+      font-size: 13px;
+      color: $secondary;
     }
   }
 }

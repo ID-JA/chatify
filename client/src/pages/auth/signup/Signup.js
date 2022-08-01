@@ -106,7 +106,7 @@ const Signup = () => {
               <Button text="Sign Up" color="info" stretch={true} />
             </Form.Group>
 
-            <p className="mt-2">
+            <p className="mt-2 signup__bottom">
               Already have an account?{" "}
               <Link className="link" to="/signin">
                 Signin
