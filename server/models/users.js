@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -18,27 +19,39 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  googleID: {
-    type: String,
-    required: true,
-  },
+  googleID: String,
   picture: {
-    type: String,
+    publicID: {
+      type: String,
+      required: true,
+    },
+    pictureURL: {
+      type: String,
+      required: true,
+    },
+  },
+  isConfirmed: {
+    type: Boolean,
+    default: false,
   },
   friends: {
-    type: [{ type: mongoose.Types.ObjectId, ref: "user" }],
+    type: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     default: [],
   },
+  OTP: {
+    type: String,
+    default: "",
+  },
   //   interests: {
-  //     type: [{ type: mongoose.Types.ObjectId, ref: "interests" }],
+  //     type: [{ type: mongoose.Types.ObjectId, ref: "Interests" }],
   //     default: [],
   //   },
   reqSent: {
-    type: [{ type: mongoose.Types.ObjectId, ref: "user" }],
+    type: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     default: [],
   },
   reqRecieved: {
-    type: [{ type: mongoose.Types.ObjectId, ref: "user" }],
+    type: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     default: [],
   },
   lastOnline: {
@@ -47,5 +60,10 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const User = mongoose.model("user", userSchema);
+userSchema.pre("save", function () {
+  const salt = bcrypt.genSaltSync(11);
+  this.password = bcrypt.hashSync(this.password, salt);
+});
+
+const User = mongoose.model("User", userSchema);
 module.exports = User;

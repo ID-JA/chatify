@@ -1,5 +1,6 @@
 const ApiError = require("../classes/ApiErrors.js");
 const mongoose = require("mongoose");
+const multer = require("multer");
 // const jwt = require("jsonwebtoken");
 
 const handleApiError = (e, req, res, next) => {
@@ -21,6 +22,13 @@ const handleApiError = (e, req, res, next) => {
   //       message: "Your session might be expired, please login again",
   //     });
   //   }
+
+  if (e instanceof multer.MulterError) {
+    return res.status(400).json({
+      message:
+        "An error occured while uploading your picture, please verify your picture extension and try again",
+    });
+  }
 
   return res.status(500).json({
     message: "Something went wrong",
