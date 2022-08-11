@@ -1,20 +1,15 @@
+// dependencies
+const jwt = require("jsonwebtoken");
+
+// files
 const ApiError = require("../classes/ApiErrors.js");
 const cloudinary = require("../config/cloudinary.js");
 const { sendConfirmationEmail } = require("../services/emailing.js");
 
+// models
 const User = require("../models/users.js");
 
 const signup = async (req, res, next) => {
-  /**
-   * validate body
-   * unique email & username
-   * hash password
-   * store picture in cloudinary
-   * save user to db
-   * send confirmation email
-   * redirect to login
-   */
-
   try {
     const { email, username, password } = req.body;
 
@@ -69,13 +64,6 @@ const signup = async (req, res, next) => {
 };
 
 const confirmAccount = async (req, res, next) => {
-  /**
-   * get id & otp from body
-   * validate id & otp
-   * update user with confirmed: true if otp matches
-   * remove otp field from document
-   * redirect to login
-   */
   const { otp } = req.body;
   try {
     if (otp === undefined) {
@@ -95,7 +83,37 @@ const confirmAccount = async (req, res, next) => {
   }
 };
 
+const login = async (req, res, next) => {
+  try {
+    const { _id, isConfirmed } = req.user;
+    if (!isConfirmed) throw new Error("Please confirm your account!");
+    const accessToken = jwt.sign(
+      {
+        userID: _id,
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
+    const refreshToken = jwt.sign(
+      {
+        userID: _id,
+      },
+      process.env.REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: "1y",
+      }
+    );
+
+    res.json({ accessToken, refreshToken });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   signup,
   confirmAccount,
+  login,
 };

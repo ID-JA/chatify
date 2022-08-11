@@ -1,13 +1,16 @@
 const express = require("express");
+const passport = require("passport");
 const app = express();
 require("dotenv").config();
 require("colors");
+require("./config/passport.js");
 const connectDB = require("./config/db");
 const { handleApiError } = require("./middlewares/errorHandler");
 
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extends: true }));
+app.use(passport.initialize());
 
 // Routes
 app.use("/api/auth", require("./routes/auth.js"));
