@@ -2,10 +2,15 @@ import React, { useState, useRef } from "react";
 import { FaCamera } from "react-icons/fa";
 import { Container } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
+import Alert from "react-bootstrap/Alert";
+import validator from "email-validator";
+import axios from "../../../config/axios.js";
 
-import "./Signup.scss";
+import { useSignup } from "../../../hooks/useAxios.users.js";
 import Button from "../../../components/button/Button";
 import { Link } from "react-router-dom";
+
+import "./Signup.scss";
 
 const Signup = () => {
   /**
@@ -20,6 +25,18 @@ const Signup = () => {
   });
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
+  const [error, setError] = useState("");
+
+  /**
+   * ==================== HOOKS ====================
+   */
+  const {
+    mutate,
+    isError,
+    isLoading,
+    error: mutationError,
+    data,
+  } = useSignup();
 
   /**
    * ==================== FUNCTIONS ====================
@@ -38,16 +55,70 @@ const Signup = () => {
     }
   };
 
-  /**
-   * TODO: Add validation
-   * TODO: onSubmit function
-   */
+  const validateInputs = () => {
+    const { username, email, password } = user;
+    if (
+      username.length > 0 &&
+      email.length > 0 &&
+      validator.validate(email) &&
+      password.length > 0
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const handleFileChanged = (e) => {
+    console.log(e.target.files[0]);
+    setFile(URL.createObjectURL(e.target.files[0]));
+    setUser({ ...user, picture: e.target.files[0] });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      if (validateInputs()) {
+        // send data to server
+        let formData = new FormData();
+        const { username, email, password, picture } = user;
+
+        formData.append("username", username);
+        formData.append("email", email);
+        formData.append("password", password);
+        formData.append("picture", picture);
+        mutate(formData);
+      } else {
+        setError("Please fill out all fields with valid information.");
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setUser({ username: "", email: "", password: "", picture: "" });
+    }
+  };
 
   return (
     <div className="signup">
       <Container>
         <h2 className="signup__branding">Chatify</h2>
         <div className="signup__form">
+          {/* Error alert */}
+          {isError && (
+            <Alert variant="danger" onClose={() => setError("")} dismissible>
+              {mutationError?.response.data.message.toString()}
+            </Alert>
+          )}
+          {error && (
+            <Alert variant="danger" onClose={() => setError("")} dismissible>
+              {error}
+            </Alert>
+          )}
+          {/* Response alert */}
+          {data && (
+            <Alert variant="info" dismissible>
+              {data.data.message}
+            </Alert>
+          )}
           <div
             className="signup__imgPlaceholder"
             onClick={() => fileInput.current.click()}
@@ -61,8 +132,7 @@ const Signup = () => {
               accept="image/*"
               multiple={false}
               onChange={(e) => {
-                setFile(URL.createObjectURL(e.target.files[0]));
-                setUser({ ...user, picture: e.target.files[0].name });
+                handleFileChanged(e);
               }}
             />
             {/* if no img selected, show camera */}
@@ -103,7 +173,13 @@ const Signup = () => {
             </Form.Group>
 
             <Form.Group className="mt-4" controlId="formBasicPassword">
-              <Button text="Sign Up" color="info" stretch={true} />
+              <Button
+                text="Sign Up"
+                color="info"
+                stretch={true}
+                handleSubmit={handleSubmit}
+                isLoading={isLoading}
+              />
             </Form.Group>
 
             <p className="mt-2 signup__bottom">

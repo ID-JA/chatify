@@ -4,10 +4,16 @@ const app = express();
 require("dotenv").config();
 require("colors");
 require("./config/passport.js");
+const cors = require("cors");
 const connectDB = require("./config/db");
 const { handleApiError } = require("./middlewares/errorHandler");
 
 // Middlewares
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extends: true }));
 app.use(passport.initialize());
