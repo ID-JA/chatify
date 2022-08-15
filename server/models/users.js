@@ -17,18 +17,11 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
   },
   googleID: String,
   picture: {
-    publicID: {
-      type: String,
-      required: true,
-    },
-    pictureURL: {
-      type: String,
-      required: true,
-    },
+    publicID: String,
+    pictureURL: String,
   },
   isConfirmed: {
     type: Boolean,
@@ -61,8 +54,10 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre("save", function () {
-  const salt = bcrypt.genSaltSync(11);
-  this.password = bcrypt.hashSync(this.password, salt);
+  if (this.isModified("password") && this.password !== "") {
+    console.log("yes");
+    this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(10));
+  }
 });
 
 userSchema.methods = {

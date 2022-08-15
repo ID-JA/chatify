@@ -108,8 +108,18 @@ const login = async (req, res, next) => {
   }
 };
 
+/**
+ * OAUTH
+ */
+
+const redirect = async (req, res, next) => {
+  console.log(req.user);
+  res.send("You are logged in");
+};
+
 module.exports = {
   signup,
   confirmAccount,
   login,
+  redirect,
 };
