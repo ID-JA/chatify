@@ -13,11 +13,7 @@ const signup = async (req, res, next) => {
   try {
     const { email, username, password } = req.body;
 
-    if (
-      email === undefined ||
-      username === undefined ||
-      password === undefined
-    ) {
+    if (email == undefined || username == undefined || password == undefined) {
       throw ApiError.BadRequest("Missing required fields");
     }
     let user = await User.findOne({
@@ -66,7 +62,7 @@ const signup = async (req, res, next) => {
 const confirmAccount = async (req, res, next) => {
   const { otp } = req.body;
   try {
-    if (otp === undefined) {
+    if (otp == undefined) {
       throw ApiError.BadRequest("Missing required fields");
     }
 

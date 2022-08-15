@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const app = express();
 require("dotenv").config();
+const passportSetup = require("./config/passport.js");
 require("colors");
 require("./config/passport.js");
 const cors = require("cors");

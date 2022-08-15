@@ -1,5 +1,6 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const GoogleStrategy = require("passport-google-oauth20");
 
 const User = require("../models/users.js");
 
@@ -21,5 +22,16 @@ passport.use(
         done(error);
       }
     }
+  )
+);
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "/api/auth/google/redirect",
+    },
+    () => {}
   )
 );

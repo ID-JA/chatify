@@ -12,4 +12,9 @@ router.post(
   login
 );
 
+/**
+ * GOOGLE OAUTH ROUTES
+ */
+router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
+
 module.exports = router;
