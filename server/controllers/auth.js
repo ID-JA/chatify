@@ -117,9 +117,19 @@ const redirect = async (req, res, next) => {
   res.send("You are logged in");
 };
 
+const logout = (req, res, next) => {
+  try {
+    req.logout();
+    res.send("You are logged out");
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   signup,
   confirmAccount,
   login,
   redirect,
+  logout,
 };

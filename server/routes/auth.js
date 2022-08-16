@@ -6,6 +6,7 @@ const {
   confirmAccount,
   login,
   redirect,
+  logout,
 } = require("../controllers/auth");
 const upload = require("../config/multer.js");
 
@@ -16,6 +17,7 @@ router.post(
   passport.authenticate("local", { session: false }),
   login
 );
+router.get("/logout", logout);
 
 /**
  * GOOGLE OAUTH ROUTES
