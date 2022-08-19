@@ -23,10 +23,8 @@ const getUserById = async (req, res) => {
 };
 
 /**
- * get users of current user
- * get user
- * get sent users
- * get recieved users
+ * send friend req
+ * accept / reject friend req ( accept = add userID to friends array in db )
  */
 
 // const updateProfilePicture = async (req, res, next) => {
