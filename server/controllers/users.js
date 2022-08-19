@@ -31,12 +31,6 @@ const getUserById = async (req, res) => {
 const sendFriendReq = async (req, res, next) => {
   try {
     const { from, to } = req.body;
-    const user = await User.findById(from);
-    const friend = await User.findById(to);
-
-    if (!user || !friend) {
-      throw ApiError.NotFound("User not found");
-    }
 
     await User.findByIdAndUpdate(from, {
       $push: { reqSent: to },
@@ -56,4 +50,34 @@ const sendFriendReq = async (req, res, next) => {
   }
 };
 
-module.exports = { removeUser, getUserById, sendFriendReq };
+const acceptFriendReq = async (req, res, next) => {
+  try {
+    const { from, to } = req.body;
+
+    await User.findByIdAndUpdate(from, {
+      $pull: { reqRecieved: to },
+    });
+
+    await User.findByIdAndUpdate(to, {
+      $pull: { reqSent: from },
+    });
+
+    await User.findByIdAndUpdate(from, {
+      $push: { friends: to },
+    });
+
+    await User.findByIdAndUpdate(to, {
+      $push: { friends: from },
+    });
+
+    /**
+     * todo: handle socket.io to send notification to "to" user
+     */
+
+    res.status(200).json({ message: "friend request accepted" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { removeUser, getUserById, sendFriendReq, acceptFriendReq };
