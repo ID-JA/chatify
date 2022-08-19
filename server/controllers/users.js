@@ -98,10 +98,29 @@ const refuseFriendReq = async (req, res, next) => {
   }
 };
 
+const removeFriend = async (req, res, next) => {
+  try {
+    const { from, to } = req.body;
+
+    await User.findByIdAndUpdate(from, {
+      $pull: { friends: to },
+    });
+
+    await User.findByIdAndUpdate(to, {
+      $pull: { friends: from },
+    });
+
+    res.status(200).json({ message: "friend removed" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   removeUser,
   getUserById,
   sendFriendReq,
   acceptFriendReq,
   refuseFriendReq,
+  removeFriend,
 };
