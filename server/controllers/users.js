@@ -11,6 +11,17 @@ const removeUser = async (req, res, next) => {
   }
 };
 
+// get user by id
+const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    const { password, updatedAt, ...other } = user._doc;
+    res.status(200).json(other);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 /**
  * get users of current user
  * get user
@@ -49,4 +60,4 @@ const removeUser = async (req, res, next) => {
 //     }
 //   };
 
-module.exports = { removeUser };
+module.exports = { removeUser, getUserById };
