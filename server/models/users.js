@@ -36,10 +36,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    //   interests: {
-    //     type: [{ type: mongoose.Types.ObjectId, ref: "Interests" }],
-    //     default: [],
-    //   },
     reqSent: {
       type: [{ type: mongoose.Types.ObjectId, ref: "User" }],
       default: [],
