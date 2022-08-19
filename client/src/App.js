@@ -1,30 +1,24 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { QueryClientProvider, QueryClient } from "react-query";
-
-import Signup from "./pages/auth/signup/Signup.js";
-import Signin from "./pages/auth/signin/Signin.js";
-import ForgetPassword from "./pages/auth/forgetPassword/ForgetPassword.js";
-import ResetPassword from "./pages/auth/resetPassword/ResetPassword.js";
-
-import "./App.scss";
-
-const queryClient = new QueryClient();
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ForgetPassword, ResetPassword, SignIn, SignUp } from './pages/auth';
+import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
+import { DEFAULT_THEME, MyGlobalStyle } from './theme';
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <div className="App">
-        <Router>
-          <Routes>
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/signin" element={<Signin />} />
-            <Route path="/forget-password" element={<ForgetPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-          </Routes>
-        </Router>
-      </div>
-    </QueryClientProvider>
-  );
+	return (
+		<MantineProvider withNormalizeCSS withGlobalStyles theme={DEFAULT_THEME}>
+			<MyGlobalStyle />
+			<ColorSchemeProvider colorScheme='dark'>
+				<Router>
+					<Routes>
+						<Route path='/forget-password' element={<ForgetPassword />} />
+						<Route path='/singin' element={<SignIn />} />
+						<Route path='/shinup' element={<SignUp />} />
+						<Route path='/ResetPassword' element={<ResetPassword />} />
+					</Routes>
+				</Router>
+			</ColorSchemeProvider>
+		</MantineProvider>
+	);
 }
 
 export default App;

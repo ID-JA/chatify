@@ -1,0 +1,1 @@
+export { ChatifyLogo } from './ChatifyLogo';
