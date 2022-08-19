@@ -38,6 +38,7 @@ app.use(passport.session());
 // Routes
 app.use("/api/auth", require("./routes/auth.js"));
 app.use("/api/users", require("./routes/users.js"));
+app.use("/api/chats", require("./routes/chats.js"));
 
 // error middleware
 app.use(handleApiError);

@@ -11,6 +11,13 @@ const removeUser = async (req, res, next) => {
   }
 };
 
+/**
+ * get users of current user
+ * get user
+ * get sent users
+ * get recieved users
+ */
+
 // const updateProfilePicture = async (req, res, next) => {
 //     try {
 //       //verify body
