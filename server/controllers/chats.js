@@ -16,6 +16,19 @@ const createChat = async (req, res, next) => {
   }
 };
 
+// Get all chats of current user
+const getChatsByUser = async (req, res, next) => {
+  try {
+    const chats = await Chat.find({
+      users: { $in: [req.params.id] },
+    });
+    res.status(200).json(chats);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   createChat,
+  getChatsByUser,
 };
