@@ -1,4 +1,5 @@
 const User = require("../models/users.js");
+const ApiError = require("../classes/ApiErrors.js");
 
 const removeUser = async (req, res, next) => {
   try {
@@ -27,35 +28,32 @@ const getUserById = async (req, res) => {
  * accept / reject friend req ( accept = add userID to friends array in db )
  */
 
-// const updateProfilePicture = async (req, res, next) => {
-//     try {
-//       //verify body
-//       if (req.file === undefined) {
-//         throw ApiError.BadRequest("Please insert a picture");
-//       }
-//       // get user
-//       const user = await User.findByIdAndUpdate(req.params.id, {
-//         picture: req.file.filename,
-//       });
-//       // delete old pic
-//       fs.unlink(`./public/uploads/users/pictures/${user.picture}`, (err) => {
-//         if (err) {
-//           return res
-//             .status(500)
-//             .json(
-//               createError.InternalServerError(
-//                 "Something went wrong while trying to delete your old picture!"
-//               )
-//             );
-//         }
-//       });
+const sendFriendReq = async (req, res, next) => {
+  try {
+    const { from, to } = req.body;
+    const user = await User.findById(from);
+    const friend = await User.findById(to);
 
-//       res.json({ msg: "profile picture updated successfully" });
-//     } catch (error) {
-//       unlinkImage(`./public/uploads/users/pictures/${req.file.filename}`);
-//       next(error);
-//       return;
-//     }
-//   };
+    if (!user || !friend) {
+      throw ApiError.NotFound("User not found");
+    }
 
-module.exports = { removeUser, getUserById };
+    await User.findByIdAndUpdate(from, {
+      $push: { reqSent: to },
+    });
+
+    await User.findByIdAndUpdate(to, {
+      $push: { reqRecieved: from },
+    });
+
+    /**
+     * todo: handle socket.io to send notification to "to" user
+     */
+
+    res.status(200).json({ message: "Friend request sent" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { removeUser, getUserById, sendFriendReq };
