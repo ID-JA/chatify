@@ -64,6 +64,9 @@ userSchema.methods = {
   isValidPassword: function (password) {
     return bcrypt.compareSync(password, this.password);
   },
+  hashPassword: function (password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+  },
 };
 
 const User = mongoose.model("User", userSchema);

@@ -7,6 +7,10 @@ const {
   login,
   redirect,
   logout,
+  forgotPassword,
+  resetPasswordGET,
+  resetPasswordPOST,
+  changePassword,
 } = require("../controllers/auth");
 const upload = require("../config/multer.js");
 
@@ -18,6 +22,10 @@ router.post(
   login
 );
 router.get("/logout", logout);
+router.post("/forgotpassword", forgotPassword);
+router.post("/resetpassword/:id", resetPasswordPOST);
+router.put("/changepassword/:id", changePassword);
+router.get("/resetpassword/:id/:token", resetPasswordGET);
 
 /**
  * GOOGLE OAUTH ROUTES

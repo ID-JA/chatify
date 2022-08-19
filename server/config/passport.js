@@ -17,19 +17,17 @@ passport.use(
   new LocalStrategy(
     {
       usernameField: "email",
+      passReqToCallback: true,
     },
     async (email, password, done) => {
-      try {
-        const user = await User.findOne({ email });
-        if (!user) return done(null, false, { message: "Invalid email" });
+      const user = await User.findOne({ email });
+      if (!user) return done(null, false, req.flash(message, "Invalid email"));
 
-        const isMatch = await user.isValidPassword(password);
-        if (!isMatch) return done(null, false, { message: "Invalid password" });
+      const isMatch = await user.isValidPassword(password);
+      if (!isMatch)
+        return done(null, false, req.flash(message, "Invalid Password"));
 
-        done(null, user);
-      } catch (error) {
-        done(error);
-      }
+      done(null, user);
     }
   )
 );
