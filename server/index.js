@@ -1,19 +1,45 @@
 const express = require("express");
-const passport = require("passport");
+const flash = require("connect-flash");
 const app = express();
 require("dotenv").config();
+const passport = require("passport");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const passportSetup = require("./config/passport.js");
 require("colors");
 require("./config/passport.js");
+const cors = require("cors");
 const connectDB = require("./config/db");
 const { handleApiError } = require("./middlewares/errorHandler");
 
 // Middlewares
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extends: true }));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 24 * 60 * 60 * 1000, httpOnly: true },
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI || "mongodb://localhost:27017/chatifyDB",
+    }),
+  })
+);
+app.use(flash());
 app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.use("/api/auth", require("./routes/auth.js"));
+app.use("/api/users", require("./routes/users.js"));
+app.use("/api/chats", require("./routes/chats.js"));
+app.use("/api/messages", require("./routes/messages.js"));
 
 // error middleware
 app.use(handleApiError);
