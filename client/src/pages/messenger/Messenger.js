@@ -17,6 +17,8 @@ import { ChatifyLogo } from "../../components/ChatifyLogo/ChatifyLogo.jsx";
 import OnlineFriend from "../../components/OnlineFriend/OnlineFriend.jsx";
 import Chat from "../../components/Chat/Chat.jsx";
 import { IconSun, IconMoonStars } from "@tabler/icons";
+import SideChat from "../../components/SideChat/SideChat.jsx";
+import NoChatSelected from "../../assets/images/noChatSelected.svg";
 
 const useStyles = createStyles((theme) => ({
   userInfo: {
@@ -53,6 +55,23 @@ const useStyles = createStyles((theme) => ({
     alignItems: "center",
     overflowX: "auto",
   },
+
+  sideChatWrapper: {
+    marginTop: "20px",
+    marginBottom: "20px",
+  },
+
+  noChatSelectedWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  noChatSelectedSVG: {
+    width: "300px",
+    marginBottom: "40px",
+  },
 }));
 
 export default function Messenger() {
@@ -63,6 +82,8 @@ export default function Messenger() {
   const [opened, setOpened] = useState(false);
 
   const { classes } = useStyles();
+
+  const [selectedChat, setSelectedChat] = useState(null);
 
   return (
     <AppShell
@@ -120,7 +141,6 @@ export default function Messenger() {
       }
       navbar={
         <Navbar
-          height="100vh"
           p="xs"
           width={{
             // When viewport is larger than theme.breakpoints.sm, Navbar width will be 300
@@ -176,12 +196,42 @@ export default function Messenger() {
                 ))}
               </div>
             </div>
+
+            {/* Side chat */}
+            <div className={classes.sideChatWrapper}>
+              <Text style={{ marginBottom: "15px" }}>Conversations</Text>
+              <div>
+                {new Array(7).fill(0).map((_, index) => (
+                  <SideChat
+                    key={index}
+                    picture="https://images.unsplash.com/photo-1657299170222-1c67dc056b70?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60"
+                    username="Alpha"
+                    lastMessage="this is the last message"
+                    lastMessageTimestamp="1 hour ago"
+                    totalMessagesNotSeen={2}
+                  />
+                ))}
+              </div>
+            </div>
           </Navbar.Section>
         </Navbar>
       }
     >
       <div>
-        <Chat />
+        {!selectedChat ? (
+          <div className={classes.noChatSelectedWrapper}>
+            <img
+              className={classes.noChatSelectedSVG}
+              src={NoChatSelected}
+              alt="no chat selected"
+            />
+            <Text className={classes.noChatSelectedText}>
+              Start a new Conversation with someone now and have fun!
+            </Text>
+          </div>
+        ) : (
+          <Chat />
+        )}
       </div>
     </AppShell>
   );
