@@ -10,8 +10,8 @@ import {
   ActionIcon,
   useMantineColorScheme,
   ScrollArea,
-  createStyles,
   TextInput,
+  Avatar,
 } from "@mantine/core";
 import { ChatifyLogo } from "../../components/ChatifyLogo/ChatifyLogo.jsx";
 import OnlineFriend from "../../components/OnlineFriend/OnlineFriend.jsx";
@@ -20,59 +20,7 @@ import { IconSun, IconMoonStars } from "@tabler/icons";
 import SideChat from "../../components/SideChat/SideChat.jsx";
 import NoChatSelected from "../../assets/images/noChatSelected.svg";
 
-const useStyles = createStyles((theme) => ({
-  userInfo: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "start",
-    marginBottom: "10px",
-    paddingBottom: "20px",
-    borderBottom: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[3]
-    }`,
-  },
-  inputBox: {
-    marginTop: "20px",
-    marginBottom: "20px",
-    marginInline: "auto",
-    paddingBottom: "20px",
-    borderBottom: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[3]
-    }`,
-  },
-  onlineFriendsWrapper: {
-    marginTop: "20px",
-    marginBottom: "20px",
-    paddingBottom: "20px",
-    borderBottom: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[3]
-    }`,
-  },
-
-  onlineFriends: {
-    display: "flex",
-    justifyContent: "start",
-    alignItems: "center",
-    overflowX: "auto",
-  },
-
-  sideChatWrapper: {
-    marginTop: "20px",
-    marginBottom: "20px",
-  },
-
-  noChatSelectedWrapper: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  noChatSelectedSVG: {
-    width: "300px",
-    marginBottom: "40px",
-  },
-}));
+import useStyles from "./Messenger.styles.js";
 
 export default function Messenger() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
@@ -104,28 +52,20 @@ export default function Messenger() {
               alignItems: "center",
               justifyContent: "space-between",
               height: "100%",
+              width: "100%",
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "start",
-                height: "100%",
-              }}
-            >
-              <MediaQuery largerThan="md" styles={{ display: "none" }}>
-                <Burger
-                  opened={opened}
-                  onClick={() => setOpened((o) => !o)}
-                  size="sm"
-                  color={theme.colors.gray[6]}
-                  mr="xl"
-                />
-              </MediaQuery>
+            <MediaQuery largerThan="md" styles={{ display: "none" }}>
+              <Burger
+                opened={opened}
+                onClick={() => setOpened((o) => !o)}
+                size="sm"
+                color={theme.colors.gray[6]}
+                mr="xl"
+              />
+            </MediaQuery>
 
-              <ChatifyLogo type="full" />
-            </div>
+            <ChatifyLogo type="full" />
 
             <ActionIcon
               variant="outline"
@@ -157,12 +97,12 @@ export default function Messenger() {
           <Navbar.Section component={ScrollArea} grow mt="md">
             {/* Current user info */}
             <div className={classes.userInfo}>
-              <div className="chatHeader__userPicture">
-                <img
-                  src="https://images.unsplash.com/photo-1657299170222-1c67dc056b70?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60"
-                  alt=""
-                />
-              </div>
+              <Avatar
+                src="https://images.unsplash.com/photo-1657299170222-1c67dc056b70?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60"
+                size="md"
+                radius="xl"
+                style={{ marginRight: "10px" }}
+              />
               <div className="chatHeader__userInfo">
                 <div className="chatHeader__userInfo__name">
                   <Text size={17}>John Doe</Text>
@@ -218,7 +158,7 @@ export default function Messenger() {
       }
     >
       <div>
-        {!selectedChat ? (
+        {/* {!selectedChat ? (
           <div className={classes.noChatSelectedWrapper}>
             <img
               className={classes.noChatSelectedSVG}
@@ -229,9 +169,9 @@ export default function Messenger() {
               Start a new Conversation with someone now and have fun!
             </Text>
           </div>
-        ) : (
-          <Chat />
-        )}
+        ) : ( */}
+        <Chat />
+        {/* )} */}
       </div>
     </AppShell>
   );

@@ -1,24 +1,33 @@
 import React from "react";
-import { Text } from "@mantine/core";
+import { Avatar, Text, Tooltip } from "@mantine/core";
 
-import "./Message.css";
+// import "./Message.css";
+import useStyles from "./Message.styles.js";
 
 const Message = ({ own, text, picture, createdAt, seen }) => {
+  const { classes, cx } = useStyles();
+
   return (
-    <div className={`message ${own ? "ownMessage" : "notOwnMessage"}`}>
-      {!own && (
-        <div className="message_picture">
-          <img src={picture} />
+    <div className={cx(classes.message, { [classes.ownMessage]: own })}>
+      {!own && <Avatar src={picture} size="md" radius="xl" />}
+      <Tooltip
+        label={createdAt}
+        position="right"
+        color="#3C4043"
+        style={{ fontSize: "10px" }}
+      >
+        <div
+          className={cx(
+            classes.messageText,
+            { [classes.ownBgColor]: own },
+            { [classes.notOwnBgColor]: !own }
+          )}
+        >
+          <Text size={13} color="#fff">
+            {text}
+          </Text>
         </div>
-      )}
-      <div className={`message__text ${own ? "ownBgColor" : "notOwnBgColor"}`}>
-        <Text size={13} className="message__content" color="#fff">
-          {text}
-        </Text>
-        <Text size={12} className="message__createdAt" color="#fff">
-          {createdAt}
-        </Text>
-      </div>
+      </Tooltip>
     </div>
   );
 };
