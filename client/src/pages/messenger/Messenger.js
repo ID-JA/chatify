@@ -12,6 +12,7 @@ import {
   ScrollArea,
   TextInput,
   Avatar,
+  Drawer,
 } from "@mantine/core";
 import { ChatifyLogo } from "../../components/ChatifyLogo/ChatifyLogo.jsx";
 import OnlineFriend from "../../components/OnlineFriend/OnlineFriend.jsx";
@@ -19,8 +20,10 @@ import Chat from "../../components/Chat/Chat.jsx";
 import { IconSun, IconMoonStars } from "@tabler/icons";
 import SideChat from "../../components/SideChat/SideChat.jsx";
 import NoChatSelected from "../../assets/images/noChatSelected.svg";
+import Profile from "../../components/Profile/Profile.jsx";
 
 import useStyles from "./Messenger.styles.js";
+import { useSelector } from "react-redux";
 
 export default function Messenger() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
@@ -28,10 +31,14 @@ export default function Messenger() {
 
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
+  const [drawerOpened, setDrawerOpened] = useState(false);
 
   const { classes } = useStyles();
 
+  const { username, email, picture } = useSelector((store) => store.user.user);
   const [selectedChat, setSelectedChat] = useState(null);
+
+  console.log(username, email, picture.pictureURL);
 
   return (
     <AppShell
@@ -98,19 +105,35 @@ export default function Messenger() {
             {/* Current user info */}
             <div className={classes.userInfo}>
               <Avatar
-                src="https://images.unsplash.com/photo-1657299170222-1c67dc056b70?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60"
+                src={picture.pictureURL}
                 size="md"
                 radius="xl"
                 style={{ marginRight: "10px" }}
               />
-              <div className="chatHeader__userInfo">
-                <div className="chatHeader__userInfo__name">
-                  <Text size={17}>John Doe</Text>
+              <div>
+                <div>
+                  <Text size={17}>{username}</Text>
                 </div>
-                <div className="chatHeader__userInfo__status">
-                  <Text size={12} color="blue">
+                <div>
+                  <Text
+                    size={12}
+                    color="blue"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setDrawerOpened(true)}
+                  >
                     See profile
                   </Text>
+
+                  {/* PROFILE DRAWER */}
+                  <Drawer
+                    opened={drawerOpened}
+                    onClose={() => setDrawerOpened(false)}
+                    title="Profile"
+                    padding="xl"
+                    size="lg"
+                  >
+                    <Profile />
+                  </Drawer>
                 </div>
               </div>
             </div>
