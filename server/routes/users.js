@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const {
   removeUser,
-  getUserById,
+  getUser,
   sendFriendReq,
   acceptFriendReq,
   refuseFriendReq,
@@ -13,6 +13,6 @@ router.post("/sendrequest", sendFriendReq);
 router.post("/acceptrequest", acceptFriendReq);
 router.post("/refuserequest", refuseFriendReq);
 router.post("/removefriend", removeFriend);
-router.get("/:id", getUserById);
+router.get("/", getUser);
 
 module.exports = router;

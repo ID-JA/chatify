@@ -46,6 +46,7 @@ export default createStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+    marginTop: "30px",
   },
 
   noChatSelectedSVG: {

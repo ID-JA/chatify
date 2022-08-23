@@ -13,15 +13,20 @@ const removeUser = async (req, res, next) => {
 };
 
 // get user by id
-const getUserById = async (req, res) => {
+const getUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
+    const { userID, username } = req.query;
+    const user = userID
+      ? await User.findById(userID)
+      : await User.findOne({ username });
     const { password, updatedAt, ...other } = user._doc;
     res.status(200).json(other);
   } catch (err) {
-    res.status(500).json(err);
+    next(err);
   }
 };
+
+// get user by username
 
 /**
  * send friend req
@@ -118,7 +123,7 @@ const removeFriend = async (req, res, next) => {
 
 module.exports = {
   removeUser,
-  getUserById,
+  getUser,
   sendFriendReq,
   acceptFriendReq,
   refuseFriendReq,

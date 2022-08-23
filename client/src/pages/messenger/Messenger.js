@@ -131,6 +131,7 @@ export default function Messenger() {
                     title="Profile"
                     padding="xl"
                     size="lg"
+                    position="right"
                   >
                     <Profile />
                   </Drawer>
@@ -172,6 +173,7 @@ export default function Messenger() {
                     lastMessage="this is the last message"
                     lastMessageTimestamp="1 hour ago"
                     totalMessagesNotSeen={2}
+                    selectSideChat={() => setSelectedChat({})}
                   />
                 ))}
               </div>
@@ -181,7 +183,7 @@ export default function Messenger() {
       }
     >
       <div>
-        {/* {!selectedChat ? (
+        {!selectedChat ? (
           <div className={classes.noChatSelectedWrapper}>
             <img
               className={classes.noChatSelectedSVG}
@@ -192,9 +194,9 @@ export default function Messenger() {
               Start a new Conversation with someone now and have fun!
             </Text>
           </div>
-        ) : ( */}
-        <Chat />
-        {/* )} */}
+        ) : (
+          <Chat />
+        )}
       </div>
     </AppShell>
   );

@@ -9,11 +9,12 @@ const SideChat = ({
   lastMessage,
   lastMessageTimestamp,
   totalMessagesNotSeen,
+  selectSideChat,
 }) => {
   const { classes } = useStyles();
 
   return (
-    <div className={classes.sideChat}>
+    <div className={classes.sideChat} onClick={selectSideChat}>
       <div className={classes.sideChatPictureWrapper}>
         <img src={picture} className={classes.sideChatPicture} alt={username} />
       </div>
