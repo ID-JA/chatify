@@ -8,7 +8,7 @@ import axiosInstance from "../../axios";
 import useStyles from "./SideChat.styles.js";
 import useFetch from "../../hooks/useFetch";
 
-const SideChat = ({ conversation, selectSideChat, currentUserID }) => {
+const SideChat = ({ conversation, currentUserID }) => {
   const { classes } = useStyles();
   const { createdAt, lastMessage, _id, users } = conversation;
 
@@ -19,11 +19,10 @@ const SideChat = ({ conversation, selectSideChat, currentUserID }) => {
   console.log(data);
 
   return (
-    <div className={classes.sideChat} onClick={selectSideChat}>
+    <div className={classes.sideChat}>
       {/* <div className={classes.sideChatPictureWrapper}> */}
       <Avatar
         src={data?.picture.pictureURL}
-        // className={classes.sideChatPicture}
         alt={data?.username}
         radius="xl"
         size="md"

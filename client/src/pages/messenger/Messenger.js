@@ -51,8 +51,9 @@ export default function Messenger() {
   const [searchedUser, setSearchedUser] = useState({});
   const [searchedUsername, setSearchedUsername] = useState("");
   const [relationship, setRelationship] = useState("");
-  const [conversations, setConversations] = useState(null);
+  const [chatHeaderUser, setChatHeaderUser] = useState(null);
 
+  // abort prev requests when searching for a user
   useEffect(() => {
     const controller = new AbortController();
 
@@ -79,18 +80,8 @@ export default function Messenger() {
     };
   }, [searchedUsername]);
 
-  // get all conversations of the current user
-  // const getChatsOfUser = async () => {
-  //   const chats = await axiosInstance.get(`/api/chats/${_id}`);
-  //   return chats;
-  // };
-  // const { data, isLoading } = useQuery("get-conversations", getChatsOfUser);
+  // Fetching all chats of current user
   const { data, isLoading, error } = useFetch(`/api/chats/${_id}`);
-  console.log(data);
-
-  // if (error) {
-  //   return <h1>SOMETHING WENT WRONG</h1>;
-  // }
 
   // get the relationship of current user and searched user
   const setRelationshipStatus = useCallback(
@@ -117,6 +108,10 @@ export default function Messenger() {
     [searchedUser]
   );
 
+  /**
+   * render the buttons (unfriend, add friend, cancel request)
+   * based on the relationship between current user and searched user
+   */
   const RenderRelationshipButtons = useCallback(() => {
     setRelationshipStatus(searchedUser);
     switch (relationship) {
@@ -312,12 +307,9 @@ export default function Messenger() {
               ) : (
                 <div>
                   {data?.map((item) => (
-                    <SideChat
-                      key={item._id}
-                      conversation={item}
-                      currentUserID={_id}
-                      selectSideChat={() => setSelectedChat(item)}
-                    />
+                    <div onClick={() => setSelectedChat(item)} key={item._id}>
+                      <SideChat conversation={item} currentUserID={_id} />
+                    </div>
                   ))}
                 </div>
               )}
@@ -339,7 +331,7 @@ export default function Messenger() {
             </Text>
           </div>
         ) : (
-          <Chat />
+          <Chat chat={selectedChat} />
         )}
       </div>
     </AppShell>

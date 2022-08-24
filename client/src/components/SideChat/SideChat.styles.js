@@ -5,11 +5,11 @@ export default createStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     marginBottom: "20px",
-    padding: "10px 0",
+    padding: "10px 5px",
     cursor: "pointer",
 
     "&:hover": {
-      backgroundColor: theme.colorScheme === "dark" ? "#444" : "lightgray",
+      backgroundColor: theme.colorScheme === "dark" ? "#333" : "#f4f3f3",
     },
   },
   sideChatPictureWrapper: {
@@ -24,6 +24,7 @@ export default createStyles((theme) => ({
     borderRadius: "50%",
   },
   sideChatMiddle: {
+    marginLeft: "10px",
     flex: 1,
     display: "flex",
     flexDirection: "column",

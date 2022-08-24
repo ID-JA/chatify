@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, Text, Tooltip } from "@mantine/core";
+import axiosInstance from "../../axios";
+
+import { format } from "timeago.js";
 
 // import "./Message.css";
 import useStyles from "./Message.styles.js";
 
-const Message = ({ own, text, picture, createdAt, seen }) => {
+const Message = ({ message, own, user }) => {
   const { classes, cx } = useStyles();
 
   return (
     <div className={cx(classes.message, { [classes.ownMessage]: own })}>
-      {!own && <Avatar src={picture} size="md" radius="xl" />}
+      {!own && <Avatar src={user?.picture.pictureURL} size="md" radius="xl" />}
       <Tooltip
-        label={createdAt}
+        label={format(message.createdAt)}
         position="right"
         color="#3C4043"
         style={{ fontSize: "10px" }}
@@ -24,7 +27,7 @@ const Message = ({ own, text, picture, createdAt, seen }) => {
           )}
         >
           <Text size={13} color="#fff">
-            {text}
+            {message.text}
           </Text>
         </div>
       </Tooltip>
