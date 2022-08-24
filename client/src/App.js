@@ -10,6 +10,9 @@ import {
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { DEFAULT_THEME, MyGlobalStyle } from "./theme";
 
+import { QueryClient, QueryClientProvider } from "react-query";
+const queryClient = new QueryClient();
+
 function App() {
   const [colorScheme, setColorScheme] = useLocalStorage({
     key: "mantine-color-scheme",
@@ -23,27 +26,29 @@ function App() {
   useHotkeys([["mod+J", () => toggleColorScheme()]]);
 
   return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
-    >
-      <MantineProvider
-        withNormalizeCSS
-        withGlobalStyles
-        theme={{ ...DEFAULT_THEME, colorScheme }}
+    <QueryClientProvider client={queryClient}>
+      <ColorSchemeProvider
+        colorScheme={colorScheme}
+        toggleColorScheme={toggleColorScheme}
       >
-        <MyGlobalStyle />
-        <Router>
-          <Routes>
-            <Route path="/forget-password" element={<ForgetPassword />} />
-            <Route path="/singin" element={<SignIn />} />
-            <Route path="/shinup" element={<SignUp />} />
-            <Route path="/ResetPassword" element={<ResetPassword />} />
-            <Route path="/messenger" element={<Messenger />} />
-          </Routes>
-        </Router>
-      </MantineProvider>
-    </ColorSchemeProvider>
+        <MantineProvider
+          withNormalizeCSS
+          withGlobalStyles
+          theme={{ ...DEFAULT_THEME, colorScheme }}
+        >
+          <MyGlobalStyle />
+          <Router>
+            <Routes>
+              <Route path="/forget-password" element={<ForgetPassword />} />
+              <Route path="/singin" element={<SignIn />} />
+              <Route path="/shinup" element={<SignUp />} />
+              <Route path="/ResetPassword" element={<ResetPassword />} />
+              <Route path="/messenger" element={<Messenger />} />
+            </Routes>
+          </Router>
+        </MantineProvider>
+      </ColorSchemeProvider>
+    </QueryClientProvider>
   );
 }
 

@@ -19,6 +19,19 @@ export default createStyles((theme) => ({
     borderBottom: `1px solid ${
       theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[3]
     }`,
+    position: "relative",
+  },
+  inputBoxSearchResult: {
+    position: "absolute",
+    top: "35px",
+    left: 0,
+    width: "100%",
+    zIndex: 999,
+    display: "flex",
+    alignItems: "center",
+
+    "& > .mantine-Avatar-root": { marginRight: "10px" },
+    "& > .mantine-Text-root": { flex: 1 },
   },
   onlineFriendsWrapper: {
     marginTop: "20px",

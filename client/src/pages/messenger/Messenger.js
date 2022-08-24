@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   AppShell,
   Navbar,
@@ -13,6 +13,9 @@ import {
   TextInput,
   Avatar,
   Drawer,
+  Paper,
+  Button,
+  Loader,
 } from "@mantine/core";
 import { ChatifyLogo } from "../../components/ChatifyLogo/ChatifyLogo.jsx";
 import OnlineFriend from "../../components/OnlineFriend/OnlineFriend.jsx";
@@ -25,20 +28,135 @@ import Profile from "../../components/Profile/Profile.jsx";
 import useStyles from "./Messenger.styles.js";
 import { useSelector } from "react-redux";
 
+import axiosInstance from "../../axios";
+import axios from "axios";
+import { cancelTokenSource } from "../../axios";
+import { useQuery } from "react-query";
+import useFetch from "../../hooks/useFetch.js";
+
 export default function Messenger() {
+  const { classes } = useStyles();
+
+  const { username, email, picture, _id } = useSelector(
+    (store) => store.user.user
+  );
+  const [selectedChat, setSelectedChat] = useState(null);
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
 
   const theme = useMantineTheme();
+
   const [opened, setOpened] = useState(false);
   const [drawerOpened, setDrawerOpened] = useState(false);
+  const [searchedUser, setSearchedUser] = useState({});
+  const [searchedUsername, setSearchedUsername] = useState("");
+  const [relationship, setRelationship] = useState("");
+  const [conversations, setConversations] = useState(null);
 
-  const { classes } = useStyles();
+  useEffect(() => {
+    const controller = new AbortController();
 
-  const { username, email, picture } = useSelector((store) => store.user.user);
-  const [selectedChat, setSelectedChat] = useState(null);
+    const fetchUser = async () => {
+      try {
+        const { data } = await axiosInstance.get(
+          `/api/users?username=${searchedUsername}`,
+          {
+            signal: controller.signal,
+          }
+        );
+        if (data) {
+          setSearchedUser(data);
+        }
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+    if (searchedUsername !== "") setTimeout(fetchUser, 1000);
+    else setSearchedUser({});
 
-  console.log(username, email, picture.pictureURL);
+    return () => {
+      controller.abort();
+    };
+  }, [searchedUsername]);
+
+  // get all conversations of the current user
+  // const getChatsOfUser = async () => {
+  //   const chats = await axiosInstance.get(`/api/chats/${_id}`);
+  //   return chats;
+  // };
+  // const { data, isLoading } = useQuery("get-conversations", getChatsOfUser);
+  const { data, isLoading, error } = useFetch(`/api/chats/${_id}`);
+  console.log(data);
+
+  // if (error) {
+  //   return <h1>SOMETHING WENT WRONG</h1>;
+  // }
+
+  // get the relationship of current user and searched user
+  const setRelationshipStatus = useCallback(
+    (user) => {
+      if (user._id === _id) {
+        console.log("this is me");
+        setRelationship("me");
+        return;
+      }
+      if (user.friends.includes(_id)) {
+        setRelationship("friend");
+        return;
+      } else if (user.reqSent.includes(_id)) {
+        setRelationship("recieved");
+        return;
+      } else if (user.recRecieved.includes(_id)) {
+        setRelationship("sent");
+        return;
+      } else {
+        setRelationship("stranger");
+        return;
+      }
+    },
+    [searchedUser]
+  );
+
+  const RenderRelationshipButtons = useCallback(() => {
+    setRelationshipStatus(searchedUser);
+    switch (relationship) {
+      case "me":
+        return <h1>hello</h1>;
+
+      case "friend":
+        return (
+          <Button
+            style={{ backgroundColor: "rgba(200, 0, 0, 0.5)", color: "#fff" }}
+          >
+            Unfriend
+          </Button>
+        );
+
+      case "recieved":
+        return (
+          <>
+            <Button style={{ backgroundColor: "green", color: "#fff" }}>
+              Accept
+            </Button>
+            <Button
+              style={{ backgroundColor: "rgba(200, 0, 0, 0.5)", color: "#fff" }}
+            >
+              Refuse
+            </Button>
+          </>
+        );
+
+      case "sent":
+        return <Button>Cancel request</Button>;
+
+      default:
+        return (
+          <Button style={{ backgroundColor: "dodgerblue", color: "#fff" }}>
+            Add friend
+          </Button>
+        );
+    }
+  }, [relationship]);
 
   return (
     <AppShell
@@ -143,8 +261,30 @@ export default function Messenger() {
             <div className={classes.inputBox}>
               <TextInput
                 placeholder="Enter your message"
-                style={{ flex: 1, marginRight: "7px" }}
+                style={{ flex: 1, position: "relative" }}
+                value={searchedUsername}
+                onChange={(e) => setSearchedUsername(e.target.value)}
               />
+              {/* search result */}
+              {Object.keys(searchedUser).length !== 0 && (
+                <div>
+                  <Paper
+                    p={7}
+                    withBorder
+                    className={classes.inputBoxSearchResult}
+                  >
+                    <Avatar
+                      src={searchedUser.picture.pictureURL}
+                      size="md"
+                      radius="xl"
+                    />
+                    <Text>{searchedUser.username}</Text>
+
+                    {/* action button(s) */}
+                    <RenderRelationshipButtons />
+                  </Paper>
+                </div>
+              )}
             </div>
 
             {/* Online Friends */}
@@ -164,19 +304,23 @@ export default function Messenger() {
             {/* Side chat */}
             <div className={classes.sideChatWrapper}>
               <Text style={{ marginBottom: "15px" }}>Conversations</Text>
-              <div>
-                {new Array(7).fill(0).map((_, index) => (
-                  <SideChat
-                    key={index}
-                    picture="https://images.unsplash.com/photo-1657299170222-1c67dc056b70?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60"
-                    username="Alpha"
-                    lastMessage="this is the last message"
-                    lastMessageTimestamp="1 hour ago"
-                    totalMessagesNotSeen={2}
-                    selectSideChat={() => setSelectedChat({})}
-                  />
-                ))}
-              </div>
+              {isLoading ? (
+                <Loader
+                  size="md"
+                  style={{ display: "block", marginInline: "auto" }}
+                />
+              ) : (
+                <div>
+                  {data?.map((item) => (
+                    <SideChat
+                      key={item._id}
+                      conversation={item}
+                      currentUserID={_id}
+                      selectSideChat={() => setSelectedChat(item)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </Navbar.Section>
         </Navbar>
