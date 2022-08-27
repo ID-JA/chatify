@@ -15,11 +15,15 @@ const removeUser = async (req, res, next) => {
 // get user by id
 const getUser = async (req, res, next) => {
   try {
-    console.log("first");
     const { userID, username } = req.query;
     const user = userID
       ? await User.findById(userID)
-      : await User.findOne({ username: { $regex: username } });
+      : await User.findOne({
+          username: {
+            $regex: username,
+            $options: "i",
+          },
+        });
     if (user) {
       const { password, updatedAt, isConfirmed, OTP, ...others } = user._doc;
       res.status(200).json(others);

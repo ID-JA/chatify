@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import axiosInstance from "../../axios";
 
 // import "./Chat.css";
-import { Paper, Textarea } from "@mantine/core";
+import { Paper, Textarea, TextInput } from "@mantine/core";
 
 const Chat = ({ chat }) => {
   const { classes } = useStyles();
@@ -16,6 +16,7 @@ const Chat = ({ chat }) => {
 
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(null);
+  const [newMessage, setNewMessage] = useState("");
 
   // get user to put it on chatHeader
   const getUser = async () => {
@@ -44,8 +45,16 @@ const Chat = ({ chat }) => {
   }, []);
 
   // when user click 'Enter' to send a message
-  const handleSendMessage = (e) => {
-    console.log("handle message send");
+  const handleSendMessage = async () => {
+    const newMsg = {
+      chatID: chat?._id,
+      from: _id,
+      text: newMessage,
+    };
+
+    const { data } = await axiosInstance.post("/api/messages/new", newMsg);
+    setMessages([...messages, data]);
+    setNewMessage("");
   };
 
   return (
@@ -66,13 +75,23 @@ const Chat = ({ chat }) => {
         </div>
 
         <div className={classes.inputBox}>
-          <Textarea
+          {/* <Textarea
             placeholder="Enter your message"
             size="sm"
             style={{
               flex: 1,
               marginRight: "7px",
             }}
+            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+          /> */}
+          <TextInput
+            placeholder="Enter your message..."
+            style={{
+              flex: 1,
+              marginRight: "7px",
+            }}
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
           />
           {/* <Button>Send</Button> */}

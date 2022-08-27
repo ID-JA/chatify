@@ -10,7 +10,7 @@ const initialState = {
       pictureURL:
         "https://res.cloudinary.com/dihdy1u2d/image/upload/v1660663533/users_pictures/zdpxjybavwafdjtjqwqg.jpg",
     },
-    friends: [],
+    friends: ["62fa765f67cc679a5dfb3c1e"],
     reqSent: [],
     reqRecieved: [],
   },

@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { unstable_batchedUpdates } from "react-dom";
+import { io } from "socket.io-client";
 import {
   AppShell,
   Navbar,
@@ -20,7 +22,7 @@ import {
 import { ChatifyLogo } from "../../components/ChatifyLogo/ChatifyLogo.jsx";
 import OnlineFriend from "../../components/OnlineFriend/OnlineFriend.jsx";
 import Chat from "../../components/Chat/Chat.jsx";
-import { IconSun, IconMoonStars } from "@tabler/icons";
+import { IconSun, IconMoonStars, IconBell } from "@tabler/icons";
 import SideChat from "../../components/SideChat/SideChat.jsx";
 import NoChatSelected from "../../assets/images/noChatSelected.svg";
 import Profile from "../../components/Profile/Profile.jsx";
@@ -33,25 +35,42 @@ import axios from "axios";
 import { cancelTokenSource } from "../../axios";
 import { useQuery } from "react-query";
 import useFetch from "../../hooks/useFetch.js";
+import { useRef } from "react";
 
 export default function Messenger() {
+  /**
+   * Mantine states
+   */
   const { classes } = useStyles();
-
-  const { username, email, picture, _id } = useSelector(
-    (store) => store.user.user
-  );
-  const [selectedChat, setSelectedChat] = useState(null);
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
-
   const theme = useMantineTheme();
-
   const [opened, setOpened] = useState(false);
   const [drawerOpened, setDrawerOpened] = useState(false);
-  const [searchedUser, setSearchedUser] = useState({});
+
+  /**
+   * Redux store states
+   */
+  const { username, picture, _id, friends, reqSent, reqRecieved } = useSelector(
+    (store) => store.user.user
+  );
+
+  /**
+   * Component core states
+   */
+  const [selectedChat, setSelectedChat] = useState(null);
+  const [searchedUser, setSearchedUser] = useState(null);
   const [searchedUsername, setSearchedUsername] = useState("");
-  const [relationship, setRelationship] = useState("");
-  const [chatHeaderUser, setChatHeaderUser] = useState(null);
+
+  // Fetching all chats of current user
+  const { data, isLoading, error } = useFetch(`/api/chats/${_id}`);
+
+  const handleChangeUser = useCallback(
+    (data) => {
+      setSearchedUser((prev) => data);
+    },
+    [data]
+  );
 
   // abort prev requests when searching for a user
   useEffect(() => {
@@ -65,93 +84,81 @@ export default function Messenger() {
             signal: controller.signal,
           }
         );
-        if (data) {
-          setSearchedUser(data);
-        }
+        console.log(data);
+        handleChangeUser(data);
       } catch (err) {
         console.log(err.message);
       }
     };
-    if (searchedUsername !== "") setTimeout(fetchUser, 1000);
-    else setSearchedUser({});
+
+    if (searchedUsername !== "") fetchUser();
+    else setSearchedUser(null);
 
     return () => {
       controller.abort();
     };
   }, [searchedUsername]);
 
-  // Fetching all chats of current user
-  const { data, isLoading, error } = useFetch(`/api/chats/${_id}`);
-
   // get the relationship of current user and searched user
-  const setRelationshipStatus = useCallback(
-    (user) => {
-      if (user._id === _id) {
-        console.log("this is me");
-        setRelationship("me");
-        return;
-      }
-      if (user.friends.includes(_id)) {
-        setRelationship("friend");
-        return;
-      } else if (user.reqSent.includes(_id)) {
-        setRelationship("recieved");
-        return;
-      } else if (user.recRecieved.includes(_id)) {
-        setRelationship("sent");
-        return;
-      } else {
-        setRelationship("stranger");
-        return;
-      }
-    },
-    [searchedUser]
-  );
+  const setRelationshipStatus = useCallback(() => {
+    if (searchedUsername !== "") {
+      if (searchedUser?._id === _id) return "me";
+      if (friends.includes(searchedUser?._id)) return "friend";
+      if (reqSent.includes(searchedUser?._id)) return "sent";
+      if (reqRecieved.includes(searchedUser?._id)) return "recieved";
+      return "stranger";
+    }
+  }, [searchedUser]);
 
   /**
    * render the buttons (unfriend, add friend, cancel request)
    * based on the relationship between current user and searched user
    */
   const RenderRelationshipButtons = useCallback(() => {
-    setRelationshipStatus(searchedUser);
-    switch (relationship) {
-      case "me":
-        return <h1>hello</h1>;
+    if (searchedUsername !== "") {
+      const test = setRelationshipStatus(searchedUsername);
+      switch (test) {
+        case "me":
+          return <></>;
 
-      case "friend":
-        return (
-          <Button
-            style={{ backgroundColor: "rgba(200, 0, 0, 0.5)", color: "#fff" }}
-          >
-            Unfriend
-          </Button>
-        );
-
-      case "recieved":
-        return (
-          <>
-            <Button style={{ backgroundColor: "green", color: "#fff" }}>
-              Accept
-            </Button>
+        case "friend":
+          return (
             <Button
               style={{ backgroundColor: "rgba(200, 0, 0, 0.5)", color: "#fff" }}
             >
-              Refuse
+              Unfriend
             </Button>
-          </>
-        );
+          );
 
-      case "sent":
-        return <Button>Cancel request</Button>;
+        case "recieved":
+          return (
+            <>
+              <Button style={{ backgroundColor: "green", color: "#fff" }}>
+                Accept
+              </Button>
+              <Button
+                style={{
+                  backgroundColor: "rgba(200, 0, 0, 0.5)",
+                  color: "#fff",
+                }}
+              >
+                Refuse
+              </Button>
+            </>
+          );
 
-      default:
-        return (
-          <Button style={{ backgroundColor: "dodgerblue", color: "#fff" }}>
-            Add friend
-          </Button>
-        );
+        case "sent":
+          return <Button>Cancel request</Button>;
+
+        default:
+          return (
+            <Button style={{ backgroundColor: "dodgerblue", color: "#fff" }}>
+              Add friend
+            </Button>
+          );
+      }
     }
-  }, [relationship]);
+  }, [searchedUsername]);
 
   return (
     <AppShell
@@ -187,14 +194,20 @@ export default function Messenger() {
 
             <ChatifyLogo type="full" />
 
-            <ActionIcon
-              variant="outline"
-              color={dark ? "yellow" : "blue"}
-              onClick={() => toggleColorScheme()}
-              title="Toggle color scheme"
-            >
-              {dark ? <IconSun size={18} /> : <IconMoonStars size={18} />}
-            </ActionIcon>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <ActionIcon variant="transparent" title="Notifications">
+                <IconBell />
+              </ActionIcon>
+
+              <ActionIcon
+                variant="transparent"
+                onClick={() => toggleColorScheme()}
+                title="Toggle theme"
+                style={{ marginLeft: "10px" }}
+              >
+                {dark ? <IconSun /> : <IconMoonStars />}
+              </ActionIcon>
+            </div>
           </div>
           {/* </div> */}
         </Header>
@@ -259,9 +272,10 @@ export default function Messenger() {
                 style={{ flex: 1, position: "relative" }}
                 value={searchedUsername}
                 onChange={(e) => setSearchedUsername(e.target.value)}
+                autoComplete="false"
               />
               {/* search result */}
-              {Object.keys(searchedUser).length !== 0 && (
+              {searchedUser && (
                 <div>
                   <Paper
                     p={7}
@@ -269,11 +283,11 @@ export default function Messenger() {
                     className={classes.inputBoxSearchResult}
                   >
                     <Avatar
-                      src={searchedUser.picture.pictureURL}
+                      src={searchedUser?.picture?.pictureURL}
                       size="md"
                       radius="xl"
                     />
-                    <Text>{searchedUser.username}</Text>
+                    <Text>{searchedUser?.username}</Text>
 
                     {/* action button(s) */}
                     <RenderRelationshipButtons />

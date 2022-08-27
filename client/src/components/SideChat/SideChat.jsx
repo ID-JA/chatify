@@ -16,18 +16,14 @@ const SideChat = ({ conversation, currentUserID }) => {
 
   const { data, isLoading, error } = useFetch(`/api/users?userID=${userID}`);
 
-  console.log(data);
-
   return (
     <div className={classes.sideChat}>
-      {/* <div className={classes.sideChatPictureWrapper}> */}
       <Avatar
         src={data?.picture.pictureURL}
         alt={data?.username}
         radius="xl"
         size="md"
       />
-      {/* </div> */}
       <div className={classes.sideChatMiddle}>
         <Text className={classes.sideChatUsername}>{data?.username}</Text>
         <Text className={classes.sideChatLastMessage}>{lastMessage}</Text>
@@ -37,9 +33,9 @@ const SideChat = ({ conversation, currentUserID }) => {
           {/* {lastMessageTimestamp} */}
           {format(createdAt)}
         </Text>
-        <Text className={classes.totalMessagesNotSeen}>
-          {/* {totalMessagesNotSeen} */}1
-        </Text>
+        {/* <Text className={classes.totalMessagesNotSeen}>
+          1
+        </Text> */}
       </div>
     </div>
   );

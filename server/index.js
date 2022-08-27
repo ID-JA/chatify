@@ -2,6 +2,12 @@ const express = require("express");
 const flash = require("connect-flash");
 const app = express();
 require("dotenv").config();
+const server = require("http").createServer(app);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: process.env.CLIENT_URL,
+  },
+});
 const passport = require("passport");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
@@ -11,6 +17,20 @@ require("./config/passport.js");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const { handleApiError } = require("./middlewares/errorHandler");
+
+// let onlineUsers = {};
+
+// io.on("connection", (socket) => {
+//   console.log("new user connected! " + socket.id);
+
+//   socket.on("newUser", (userID) => {
+//     // Add user to onlineUsers obj
+//     onlineUsers[socket.id] = userID;
+
+//     // emit onlineUsers to clients(his/her friends)
+//     io.emit("onlineUsers", onlineUsers);
+//   });
+// });
 
 // Middlewares
 app.use(
@@ -47,7 +67,7 @@ app.use(handleApiError);
 const port = process.env.PORT || 5000;
 const startServer = async () => {
   await connectDB();
-  app.listen(port, () => {
+  server.listen(port, () => {
     console.log(`Server running on port ${port}`.bgGreen.bold);
   });
 };
