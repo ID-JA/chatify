@@ -17,14 +17,13 @@ import {
 import OnlineFriend from "../../components/OnlineFriend/OnlineFriend.jsx";
 import Chat from "../../components/Chat/Chat.jsx";
 import NoChatSelected from "../../assets/images/noChatSelected.svg";
-import Profile from "../../components/Profile/Profile.jsx";
 
 import useStyles from "./Messenger.styles.js";
 import { useSelector } from "react-redux";
 
 import axiosInstance from "../../axios";
 import SideChats from "../../components/SideChats/SideChats.jsx";
-import AppHeader from "../../components/AppHeader/AppHeader.jsx";
+import { AppHeader, Profile } from "../../components";
 
 export default function Messenger() {
   /**
@@ -50,111 +49,63 @@ export default function Messenger() {
   const [searchedUsername, setSearchedUsername] = useState("");
 
   /**
-   * ENUMS
+   * handlers
    */
-  const Relationships = {
-    Me: Symbol("me"),
-    Friend: Symbol("friend"),
-    Sent: Symbol("sent"),
-    Recieved: Symbol("recieved"),
+  const handleUsernameChanged = (e) => {
+    setSearchedUsername(e.target.value); // empty when clicked the first time
   };
 
-  // abort prev requests when searching for a user
   useEffect(() => {
-    const controller = new AbortController();
-
     const fetchUser = async () => {
       try {
         const { data } = await axiosInstance.get(
-          `/api/users?username=${searchedUsername}`,
-          {
-            signal: controller.signal,
-          }
+          `/api/users?username=${searchedUsername}`
         );
-        // handleChangeUser(data);
-        setSearchedUser(data); // null ????
-        // console.log(searchedUser);
+        setSearchedUser(data);
       } catch (err) {
         console.log(err.message);
       }
     };
 
     if (searchedUsername !== "") fetchUser();
-    else setSearchedUser(null);
-
-    return () => {
-      controller.abort();
-    };
   }, [searchedUsername]);
 
-  // get the relationship of current user and a user
   const getRelationship = (user) => {
-    if (user?._id === _id) return Relationships.Me;
-    if (friends.includes(user?._id)) return Relationships.Friend;
-    if (reqSent.includes(user?._id)) return Relationships.Sent;
-    if (reqRecieved.includes(user?._id)) return Relationships.Recieved;
-    return "stranger";
+    if (user?._id === _id) return <></>;
+    if (friends.includes(user?._id))
+      return (
+        <Button
+          style={{
+            backgroundColor: "rgba(200, 0, 0, 0.5)",
+            color: "#fff",
+          }}
+        >
+          Unfriend
+        </Button>
+      );
+    if (reqSent.includes(user?._id)) return <Button>Cancel request</Button>;
+    if (reqRecieved.includes(user?._id))
+      return (
+        <>
+          <Button style={{ backgroundColor: "green", color: "#fff" }}>
+            Accept
+          </Button>
+          <Button
+            style={{
+              backgroundColor: "rgba(200, 0, 0, 0.5)",
+              color: "#fff",
+            }}
+          >
+            Refuse
+          </Button>
+        </>
+      );
+    return (
+      <Button style={{ backgroundColor: "dodgerblue", color: "#fff" }}>
+        Add friend
+      </Button>
+    );
   };
-
-  /**
-   * render the buttons (unfriend, add friend, cancel request)
-   * based on the relationship between current user and searched user
-   */
-  // const RenderRelationshipButtons = useCallback(() => {
-
-  // }, [searchedUsername]);
-
-  useEffect(() => {
-    const RenderRelationshipButtons = () => {
-      if (searchedUsername !== "") {
-        const relationship = getRelationship(searchedUser);
-        switch (relationship) {
-          case Relationships.Me:
-            return <></>;
-
-          case Relationships.Friend:
-            return (
-              <Button
-                style={{
-                  backgroundColor: "rgba(200, 0, 0, 0.5)",
-                  color: "#fff",
-                }}
-              >
-                Unfriend
-              </Button>
-            );
-
-          case Relationships.Recieved:
-            return (
-              <>
-                <Button style={{ backgroundColor: "green", color: "#fff" }}>
-                  Accept
-                </Button>
-                <Button
-                  style={{
-                    backgroundColor: "rgba(200, 0, 0, 0.5)",
-                    color: "#fff",
-                  }}
-                >
-                  Refuse
-                </Button>
-              </>
-            );
-
-          case Relationships.Sent:
-            return <Button>Cancel request</Button>;
-
-          default:
-            return (
-              <Button style={{ backgroundColor: "dodgerblue", color: "#fff" }}>
-                Add friend
-              </Button>
-            );
-        }
-      }
-    };
-    const Buttons = RenderRelationshipButtons();
-  }, [searchedUser]);
 
   return (
     <AppShell
@@ -231,11 +182,11 @@ export default function Messenger() {
                 placeholder="Enter your message"
                 style={{ flex: 1, position: "relative" }}
                 value={searchedUsername}
-                onChange={(e) => setSearchedUsername(e.target.value)}
+                onChange={(e) => handleUsernameChanged(e)}
                 autoComplete="false"
               />
               {/* search result */}
-              {searchedUser && (
+              {searchedUser && searchedUsername !== "" && (
                 <div>
                   <Paper
                     p={7}
@@ -250,7 +201,7 @@ export default function Messenger() {
                     <Text>{searchedUser?.username}</Text>
 
                     {/* action button(s) */}
-                    {/* <RenderRelationshipButtons /> */}
+                    {getRelationship(searchedUser)}
                   </Paper>
                 </div>
               )}

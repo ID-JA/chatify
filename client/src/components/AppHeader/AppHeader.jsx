@@ -10,7 +10,7 @@ import React, { useState } from "react";
 import { ChatifyLogo } from "../ChatifyLogo/ChatifyLogo";
 import useStyles from "./AppHeader.styles.js";
 
-const AppHeader = ({ navOpened }) => {
+export const AppHeader = ({ navOpened }) => {
   /**
    * Mantine states
    */
@@ -57,5 +57,3 @@ const AppHeader = ({ navOpened }) => {
     </div>
   );
 };
-
-export default AppHeader;

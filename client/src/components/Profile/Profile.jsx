@@ -4,7 +4,7 @@ import { Avatar, Text } from "@mantine/core";
 
 import useStyles from "./Profile.styles.js";
 
-const Profile = () => {
+export const Profile = () => {
   const { username, email, picture } = useSelector((store) => store.user.user);
   const { classes } = useStyles();
 
@@ -23,5 +23,3 @@ const Profile = () => {
     </div>
   );
 };
-
-export default Profile;

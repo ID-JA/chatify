@@ -7,6 +7,7 @@ import {
   SignIn,
   SignUp,
 } from "./pages/auth";
+import Messenger from "./pages/messenger/Messenger.js";
 import { DEFAULT_THEME, MyGlobalStyle } from "./theme";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
               <Route path="signup" element={<SignUp />} />
               <Route path="reset-password" element={<ResetPassword />} />
             </Route>
+            <Route path="/messenger" element={<Messenger />} />
           </Routes>
         </Router>
       </ColorSchemeProvider>
