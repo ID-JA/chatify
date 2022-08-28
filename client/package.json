@@ -24,7 +24,8 @@
 		"tabler-icons-react": "^1.54.0",
 		"timeago.js": "^4.0.2",
 		"web-vitals": "^2.1.4",
-		"yup": "^0.32.11"
+		"yup": "^0.32.11",
+		"zxcvbn": "^4.4.2"
 	},
 	"scripts": {
 		"start": "react-scripts start",
@@ -49,5 +50,6 @@
 			"last 1 firefox version",
 			"last 1 safari version"
 		]
-	}
+	},
+	"devDependencies": {}
 }
