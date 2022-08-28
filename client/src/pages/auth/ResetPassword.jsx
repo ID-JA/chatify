@@ -1,67 +1,49 @@
-// import React, { useState } from "react";
-// import { Container } from "react-bootstrap";
-// import Form from "react-bootstrap/Form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Button, Text } from '@mantine/core';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
 
-// import "./ResetPassword.scss";
-// import Button from "../../../components/button/Button";
+import { PasswordField } from '../../components';
 
-// const ResetPassword = () => {
-//   /**
-//    * ==================== STATES ====================
-//    */
-//   const [password, setPassword] = useState("");
-//   const [passwordConfirmation, setPasswordConfirmation] = useState("");
-
-//   /**
-//    * ==================== FUNCTIONS ====================
-//    */
-
-//   /**
-//    * TODO: Add validation
-//    * TODO: onSubmit function
-//    */
-
-//   return (
-//     <div className="resetPassword">
-//       <Container>
-//         <h2 className="resetPassword__branding">Chatify</h2>
-//         <div className="resetPassword__form">
-//           <Form>
-//             <Form.Group controlId="formBasicPassword">
-//               <Form.Label>New Password</Form.Label>
-//               <Form.Control
-//                 type="password"
-//                 value={password}
-//                 onChange={(e) => setPassword(e.target.value)}
-//                 name="password"
-//               />
-//             </Form.Group>
-
-//             <Form.Group controlId="formBasicPasswordConfirmation">
-//               <Form.Label>Confirm Password</Form.Label>
-//               <Form.Control
-//                 type="password"
-//                 value={passwordConfirmation}
-//                 onChange={(e) => setPasswordConfirmation(e.target.value)}
-//                 name="passwordConfirmation"
-//               />
-//             </Form.Group>
-
-//             <Form.Group className="mt-4" controlId="formBasicPassword">
-//               <Button text="Reset Password" color="info" stretch={true} />
-//             </Form.Group>
-//           </Form>
-//         </div>
-//       </Container>
-//     </div>
-//   );
-// };
-
-// export default ResetPassword;
-import React from 'react';
+const validationSchema = yup.object({
+	newPassword: yup.string().required('No password provided.'),
+});
 
 function ResetPassword() {
-	return <div>ResetPassword</div>;
+	const methods = useForm({
+		resolver: yupResolver(validationSchema),
+	});
+
+	const {
+		formState: { errors },
+		handleSubmit,
+		register,
+	} = methods;
+
+	const onSubmit = (value) => {
+		console.log(value);
+	};
+
+	return (
+		<form onSubmit={handleSubmit(onSubmit)}>
+			<Text size='lg' weight={500} align='center' mb='xl'>
+				Reset password
+			</Text>
+			<Text color='dimmed' size={14} mb='lg'>
+				Your new password must be different from previous used password.
+			</Text>
+			<PasswordField
+				label='New password'
+				name='newPassword'
+				withStrength
+				error={errors.newPassword && errors.newPassword.message}
+				{...register('newPassword')}
+			/>
+			<Button fullWidth mt='lg' type='submit'>
+				Change Password
+			</Button>
+		</form>
+	);
 }
 
 export default ResetPassword;
