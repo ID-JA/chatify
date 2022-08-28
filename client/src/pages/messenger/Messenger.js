@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { unstable_batchedUpdates } from "react-dom";
-import { io } from "socket.io-client";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   AppShell,
   Navbar,
@@ -45,30 +44,25 @@ export default function Messenger() {
    * Component core states
    */
   const [selectedChat, setSelectedChat] = useState(null);
-  const [searchedUser, setSearchedUser] = useState(null);
   const [searchedUsername, setSearchedUsername] = useState("");
 
   /**
-   * handlers
+   * fetching user based on username state
    */
-  const handleUsernameChanged = (e) => {
-    setSearchedUsername(e.target.value); // empty when clicked the first time
+  const getUserByUsername = async (searchedUsername) => {
+    const { data } = await axiosInstance.get(
+      `/api/users?username=${searchedUsername}`
+    );
+    return data;
   };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const { data } = await axiosInstance.get(
-          `/api/users?username=${searchedUsername}`
-        );
-        setSearchedUser(data);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-
-    if (searchedUsername !== "") fetchUser();
-  }, [searchedUsername]);
+  const { data: searchedUser } = useQuery(
+    ["user", searchedUsername],
+    () => getUserByUsername(searchedUsername),
+    {
+      enabled: searchedUsername !== "",
+    }
+  );
 
   const getRelationship = (user) => {
     if (user?._id === _id) return <></>;
@@ -182,8 +176,8 @@ export default function Messenger() {
                 placeholder="Enter your message"
                 style={{ flex: 1, position: "relative" }}
                 value={searchedUsername}
-                onChange={(e) => handleUsernameChanged(e)}
-                autoComplete="false"
+                onChange={(e) => setSearchedUsername(e.target.value)}
+                autoComplete="off"
               />
               {/* search result */}
               {searchedUser && searchedUsername !== "" && (

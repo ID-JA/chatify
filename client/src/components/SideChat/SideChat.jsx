@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Avatar, Text } from "@mantine/core";
 import { format } from "timeago.js";
-
-import { useQuery } from "react-query";
 import axiosInstance from "../../axios";
-
 import useStyles from "./SideChat.styles.js";
-import useFetch from "../../hooks/useFetch";
 
 const SideChat = ({ conversation, currentUserID }) => {
   const { classes } = useStyles();
@@ -14,7 +11,12 @@ const SideChat = ({ conversation, currentUserID }) => {
 
   const userID = users.find((item) => item._id !== currentUserID);
 
-  const { data, isLoading, error } = useFetch(`/api/users?userID=${userID}`);
+  const getUserById = async (userID) => {
+    const { data } = await axiosInstance.get(`/api/users?userID=${userID}`);
+    return data;
+  };
+
+  const { data } = useQuery(["userById", userID], () => getUserById(userID));
 
   return (
     <div className={classes.sideChat}>

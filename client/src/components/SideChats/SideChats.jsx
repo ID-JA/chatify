@@ -1,4 +1,6 @@
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "../../axios";
 import { useSelector } from "react-redux";
 import SideChat from "../SideChat/SideChat";
 import { Loader, Text } from "@mantine/core";
@@ -11,7 +13,13 @@ const SideChats = ({ setSelectedChat }) => {
   const { _id } = useSelector((store) => store.user.user);
 
   // Fetching all chats of current user
-  const { data, isLoading, error } = useFetch(`/api/chats/${_id}`);
+  const getChatsByUser = async (userID) => {
+    const { data } = await axiosInstance.get(`/api/chats/${userID}`);
+    return data;
+  };
+  const { data, isLoading, error } = useQuery(["chatsByUserId", _id], () =>
+    getChatsByUser(_id)
+  );
   return (
     <>
       <Text style={{ marginBottom: "15px" }}>Conversations</Text>
