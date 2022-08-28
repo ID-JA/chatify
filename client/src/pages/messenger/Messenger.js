@@ -6,24 +6,16 @@ import {
   Navbar,
   Header,
   Text,
-  MediaQuery,
-  Burger,
   useMantineTheme,
-  ActionIcon,
-  useMantineColorScheme,
   ScrollArea,
   TextInput,
   Avatar,
   Drawer,
   Paper,
   Button,
-  Loader,
 } from "@mantine/core";
-import { ChatifyLogo } from "../../components/ChatifyLogo/ChatifyLogo.jsx";
 import OnlineFriend from "../../components/OnlineFriend/OnlineFriend.jsx";
 import Chat from "../../components/Chat/Chat.jsx";
-import { IconSun, IconMoonStars, IconBell } from "@tabler/icons";
-import SideChat from "../../components/SideChat/SideChat.jsx";
 import NoChatSelected from "../../assets/images/noChatSelected.svg";
 import Profile from "../../components/Profile/Profile.jsx";
 
@@ -31,19 +23,14 @@ import useStyles from "./Messenger.styles.js";
 import { useSelector } from "react-redux";
 
 import axiosInstance from "../../axios";
-import axios from "axios";
-import { cancelTokenSource } from "../../axios";
-import { useQuery } from "react-query";
-import useFetch from "../../hooks/useFetch.js";
-import { useRef } from "react";
+import SideChats from "../../components/SideChats/SideChats.jsx";
+import AppHeader from "../../components/AppHeader/AppHeader.jsx";
 
 export default function Messenger() {
   /**
    * Mantine states
    */
   const { classes } = useStyles();
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const dark = colorScheme === "dark";
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
   const [drawerOpened, setDrawerOpened] = useState(false);
@@ -62,15 +49,15 @@ export default function Messenger() {
   const [searchedUser, setSearchedUser] = useState(null);
   const [searchedUsername, setSearchedUsername] = useState("");
 
-  // Fetching all chats of current user
-  const { data, isLoading, error } = useFetch(`/api/chats/${_id}`);
-
-  const handleChangeUser = useCallback(
-    (data) => {
-      setSearchedUser((prev) => data);
-    },
-    [data]
-  );
+  /**
+   * ENUMS
+   */
+  const Relationships = {
+    Me: Symbol("me"),
+    Friend: Symbol("friend"),
+    Sent: Symbol("sent"),
+    Recieved: Symbol("recieved"),
+  };
 
   // abort prev requests when searching for a user
   useEffect(() => {
@@ -84,8 +71,9 @@ export default function Messenger() {
             signal: controller.signal,
           }
         );
-        console.log(data);
-        handleChangeUser(data);
+        // handleChangeUser(data);
+        setSearchedUser(data); // null ????
+        // console.log(searchedUser);
       } catch (err) {
         console.log(err.message);
       }
@@ -99,66 +87,74 @@ export default function Messenger() {
     };
   }, [searchedUsername]);
 
-  // get the relationship of current user and searched user
-  const setRelationshipStatus = useCallback(() => {
-    if (searchedUsername !== "") {
-      if (searchedUser?._id === _id) return "me";
-      if (friends.includes(searchedUser?._id)) return "friend";
-      if (reqSent.includes(searchedUser?._id)) return "sent";
-      if (reqRecieved.includes(searchedUser?._id)) return "recieved";
-      return "stranger";
-    }
-  }, [searchedUser]);
+  // get the relationship of current user and a user
+  const getRelationship = (user) => {
+    if (user?._id === _id) return Relationships.Me;
+    if (friends.includes(user?._id)) return Relationships.Friend;
+    if (reqSent.includes(user?._id)) return Relationships.Sent;
+    if (reqRecieved.includes(user?._id)) return Relationships.Recieved;
+    return "stranger";
+  };
 
   /**
    * render the buttons (unfriend, add friend, cancel request)
    * based on the relationship between current user and searched user
    */
-  const RenderRelationshipButtons = useCallback(() => {
-    if (searchedUsername !== "") {
-      const test = setRelationshipStatus(searchedUsername);
-      switch (test) {
-        case "me":
-          return <></>;
+  // const RenderRelationshipButtons = useCallback(() => {
 
-        case "friend":
-          return (
-            <Button
-              style={{ backgroundColor: "rgba(200, 0, 0, 0.5)", color: "#fff" }}
-            >
-              Unfriend
-            </Button>
-          );
+  // }, [searchedUsername]);
 
-        case "recieved":
-          return (
-            <>
-              <Button style={{ backgroundColor: "green", color: "#fff" }}>
-                Accept
-              </Button>
+  useEffect(() => {
+    const RenderRelationshipButtons = () => {
+      if (searchedUsername !== "") {
+        const relationship = getRelationship(searchedUser);
+        switch (relationship) {
+          case Relationships.Me:
+            return <></>;
+
+          case Relationships.Friend:
+            return (
               <Button
                 style={{
                   backgroundColor: "rgba(200, 0, 0, 0.5)",
                   color: "#fff",
                 }}
               >
-                Refuse
+                Unfriend
               </Button>
-            </>
-          );
+            );
 
-        case "sent":
-          return <Button>Cancel request</Button>;
+          case Relationships.Recieved:
+            return (
+              <>
+                <Button style={{ backgroundColor: "green", color: "#fff" }}>
+                  Accept
+                </Button>
+                <Button
+                  style={{
+                    backgroundColor: "rgba(200, 0, 0, 0.5)",
+                    color: "#fff",
+                  }}
+                >
+                  Refuse
+                </Button>
+              </>
+            );
 
-        default:
-          return (
-            <Button style={{ backgroundColor: "dodgerblue", color: "#fff" }}>
-              Add friend
-            </Button>
-          );
+          case Relationships.Sent:
+            return <Button>Cancel request</Button>;
+
+          default:
+            return (
+              <Button style={{ backgroundColor: "dodgerblue", color: "#fff" }}>
+                Add friend
+              </Button>
+            );
+        }
       }
-    }
-  }, [searchedUsername]);
+    };
+    const Buttons = RenderRelationshipButtons();
+  }, [searchedUser]);
 
   return (
     <AppShell
@@ -173,43 +169,7 @@ export default function Messenger() {
       navbarOffsetBreakpoint="md"
       header={
         <Header height={70} p="md">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              height: "100%",
-              width: "100%",
-            }}
-          >
-            <MediaQuery largerThan="md" styles={{ display: "none" }}>
-              <Burger
-                opened={opened}
-                onClick={() => setOpened((o) => !o)}
-                size="sm"
-                color={theme.colors.gray[6]}
-                mr="xl"
-              />
-            </MediaQuery>
-
-            <ChatifyLogo type="full" />
-
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <ActionIcon variant="transparent" title="Notifications">
-                <IconBell />
-              </ActionIcon>
-
-              <ActionIcon
-                variant="transparent"
-                onClick={() => toggleColorScheme()}
-                title="Toggle theme"
-                style={{ marginLeft: "10px" }}
-              >
-                {dark ? <IconSun /> : <IconMoonStars />}
-              </ActionIcon>
-            </div>
-          </div>
-          {/* </div> */}
+          <AppHeader navOpened={setOpened} />
         </Header>
       }
       navbar={
@@ -290,7 +250,7 @@ export default function Messenger() {
                     <Text>{searchedUser?.username}</Text>
 
                     {/* action button(s) */}
-                    <RenderRelationshipButtons />
+                    {/* <RenderRelationshipButtons /> */}
                   </Paper>
                 </div>
               )}
@@ -312,21 +272,7 @@ export default function Messenger() {
 
             {/* Side chat */}
             <div className={classes.sideChatWrapper}>
-              <Text style={{ marginBottom: "15px" }}>Conversations</Text>
-              {isLoading ? (
-                <Loader
-                  size="md"
-                  style={{ display: "block", marginInline: "auto" }}
-                />
-              ) : (
-                <div>
-                  {data?.map((item) => (
-                    <div onClick={() => setSelectedChat(item)} key={item._id}>
-                      <SideChat conversation={item} currentUserID={_id} />
-                    </div>
-                  ))}
-                </div>
-              )}
+              <SideChats setSelectedChat={setSelectedChat} />
             </div>
           </Navbar.Section>
         </Navbar>
