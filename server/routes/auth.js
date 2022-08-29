@@ -16,11 +16,7 @@ const upload = require("../config/multer.js");
 
 router.post("/signup", upload.single("picture"), signup);
 router.post("/confirm", confirmAccount);
-router.post(
-  "/login",
-  passport.authenticate("local", { session: false }),
-  login
-);
+router.post("/login", passport.authenticate("local"), login);
 router.get("/logout", logout);
 router.post("/forgotpassword", forgotPassword);
 router.post("/resetpassword/:id", resetPasswordPOST);

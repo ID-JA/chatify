@@ -5,6 +5,9 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
+import { useMutation } from '@tanstack/react-query';
+import axiosInstance from '../../axios';
+
 const validationSchema = yup.object().shape({
   email: yup.string().email().required('Email address is required'),
   password: yup.string().required('Password is required'),
@@ -22,8 +25,9 @@ function SignIn() {
     formState: { errors },
   } = methods;
 
-  const onSubmit = () => {
-    // mutation.mutate(e);
+  const mutation = useMutation((user) => axiosInstance.post('/api/auth/login', user));
+  const onSubmit = (user) => {
+    mutation.mutate(user);
   };
 
   return (
@@ -55,7 +59,7 @@ function SignIn() {
             Forgot password
           </Text>
         </Group>
-        <Button type="submit" fullWidth>
+        <Button type="submit" fullWidth loading={mutation.isLoading}>
           Sign in
         </Button>
         <Text mt="lg" align="center" size="sm">

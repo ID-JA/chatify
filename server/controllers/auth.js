@@ -84,9 +84,6 @@ const confirmAccount = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    console.log("entered");
-    if (req.flash("message"))
-      return res.json({ message: req.flash("message") });
     const { _id, isConfirmed } = req.user;
     if (!isConfirmed) throw new Error("Please confirm your account!");
     const accessToken = jwt.sign(
@@ -108,7 +105,7 @@ const login = async (req, res, next) => {
       }
     );
 
-    res.json({ accessToken, refreshToken });
+    res.json({ user: req.user, accessToken, refreshToken });
   } catch (error) {
     next(error);
   }
