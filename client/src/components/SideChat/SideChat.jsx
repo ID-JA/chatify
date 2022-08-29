@@ -1,31 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Avatar, Text } from "@mantine/core";
-import { format } from "timeago.js";
-import axiosInstance from "../../axios";
-import useStyles from "./SideChat.styles.js";
+import { Avatar, Text } from '@mantine/core';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+import { format } from 'timeago.js';
+import axiosInstance from '../../axios';
+import useStyles from './SideChat.styles';
 
 const SideChat = ({ conversation, currentUserID }) => {
   const { classes } = useStyles();
-  const { createdAt, lastMessage, _id, users } = conversation;
+  const { createdAt, lastMessage, users } = conversation;
 
   const userID = users.find((item) => item._id !== currentUserID);
 
-  const getUserById = async (userID) => {
-    const { data } = await axiosInstance.get(`/api/users?userID=${userID}`);
+  const getUserById = async (userId) => {
+    const { data } = await axiosInstance.get(`/api/users?userID=${userId}`);
     return data;
   };
 
-  const { data } = useQuery(["userById", userID], () => getUserById(userID));
+  const { data } = useQuery(['userById', userID], () => getUserById(userID));
 
   return (
     <div className={classes.sideChat}>
-      <Avatar
-        src={data?.picture.pictureURL}
-        alt={data?.username}
-        radius="xl"
-        size="md"
-      />
+      <Avatar src={data?.picture.pictureURL} alt={data?.username} radius="xl" size="md" />
       <div className={classes.sideChatMiddle}>
         <Text className={classes.sideChatUsername}>{data?.username}</Text>
         <Text className={classes.sideChatLastMessage}>{lastMessage}</Text>

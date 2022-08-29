@@ -1,11 +1,9 @@
-import React, { useState } from "react";
-import { Avatar, Text, Tooltip } from "@mantine/core";
-import axiosInstance from "../../axios";
-
-import { format } from "timeago.js";
+import { Avatar, Text, Tooltip } from '@mantine/core';
+import React from 'react';
+import { format } from 'timeago.js';
 
 // import "./Message.css";
-import useStyles from "./Message.styles.js";
+import useStyles from './Message.styles';
 
 const Message = ({ message, own, user }) => {
   const { classes, cx } = useStyles();
@@ -17,7 +15,7 @@ const Message = ({ message, own, user }) => {
         label={format(message.createdAt)}
         position="right"
         color="#3C4043"
-        style={{ fontSize: "10px" }}
+        style={{ fontSize: '10px' }}
       >
         <div
           className={cx(

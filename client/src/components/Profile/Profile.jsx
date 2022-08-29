@@ -1,8 +1,8 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { Avatar, Text } from "@mantine/core";
+import { Avatar, Text } from '@mantine/core';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-import useStyles from "./Profile.styles.js";
+import useStyles from './Profile.styles';
 
 export const Profile = () => {
   const { username, email, picture } = useSelector((store) => store.user.user);
@@ -10,11 +10,7 @@ export const Profile = () => {
 
   return (
     <div className={classes.profile}>
-      <Avatar
-        src={picture.pictureURL}
-        size="250px"
-        className={classes.avatar}
-      />
+      <Avatar src={picture.pictureURL} size="250px" className={classes.avatar} />
       <Text className={classes.usernameEmail}>
         {username}
         <Text>{email}</Text>

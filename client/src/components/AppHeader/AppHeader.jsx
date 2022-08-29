@@ -4,11 +4,11 @@ import {
   MediaQuery,
   useMantineColorScheme,
   useMantineTheme,
-} from "@mantine/core";
-import { IconBell, IconMoonStars, IconSun } from "@tabler/icons";
-import React, { useState } from "react";
-import { ChatifyLogo } from "../ChatifyLogo/ChatifyLogo";
-import useStyles from "./AppHeader.styles.js";
+} from '@mantine/core';
+import { IconBell, IconMoonStars, IconSun } from '@tabler/icons';
+import React, { useState } from 'react';
+import { ChatifyLogo } from '../ChatifyLogo/ChatifyLogo';
+import useStyles from './AppHeader.styles';
 
 export const AppHeader = ({ navOpened }) => {
   /**
@@ -17,7 +17,7 @@ export const AppHeader = ({ navOpened }) => {
   const [opened, setOpened] = useState(false);
   const theme = useMantineTheme();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const dark = colorScheme === "dark";
+  const dark = colorScheme === 'dark';
   const { classes } = useStyles();
 
   //   switch burger icon & cross when clicking on humburger icon
@@ -28,7 +28,7 @@ export const AppHeader = ({ navOpened }) => {
 
   return (
     <div className={classes.appHeaderWrapper}>
-      <MediaQuery largerThan="md" styles={{ display: "none" }}>
+      <MediaQuery largerThan="md" styles={{ display: 'none' }}>
         <Burger
           opened={opened}
           onClick={() => handleIconSwitch()}
@@ -49,7 +49,7 @@ export const AppHeader = ({ navOpened }) => {
           variant="transparent"
           onClick={() => toggleColorScheme()}
           title="Toggle theme"
-          style={{ marginLeft: "10px" }}
+          style={{ marginLeft: '10px' }}
         >
           {dark ? <IconSun /> : <IconMoonStars />}
         </ActionIcon>
