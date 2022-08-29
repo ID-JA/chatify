@@ -1,26 +1,26 @@
-import { createStyles } from "@mantine/core";
+import { createStyles } from '@mantine/core';
 
-export default createStyles((theme) => ({
+export default createStyles(() => ({
   profile: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: " center",
-    height: "calc(100vh - 68px)",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: ' center',
+    height: 'calc(100vh - 68px)',
   },
   avatar: {
-    borderRadius: "50%",
-    margin: "0 auto 20px",
+    borderRadius: '50%',
+    margin: '0 auto 20px',
   },
   usernameEmail: {
     flex: 1,
-    textAlign: "center",
+    textAlign: 'center',
   },
   //   how to access my custom color palette?
   logoutButton: {
-    color: "red",
-    fontSize: "18px",
-    cursor: "pointer",
-    marginBottom: "20px",
+    color: 'red',
+    fontSize: '18px',
+    cursor: 'pointer',
+    marginBottom: '20px',
   },
 }));

@@ -1,12 +1,12 @@
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Anchor, Button, Text, TextInput } from "@mantine/core";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Anchor, Button, Text, TextInput } from '@mantine/core';
 
-import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import * as yup from "yup";
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
+import * as yup from 'yup';
 
 const validationSchema = yup.object({
-  email: yup.string().email("Email is not valid").required("Email is required"),
+  email: yup.string().email('Email is not valid').required('Email is required'),
 });
 
 const ForgetPassword = () => {
@@ -28,8 +28,7 @@ const ForgetPassword = () => {
         Forget password
       </Text>
       <Text color="dimmed" size={14} mb="xl">
-        Enter your email address and your password will be reset and emailed to
-        you.
+        Enter your email address and your password will be reset and emailed to you.
       </Text>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextInput
@@ -38,7 +37,7 @@ const ForgetPassword = () => {
           name="email"
           mb="lg"
           error={errors.email && errors.email.message}
-          {...register("email")}
+          {...register('email')}
         />
         <Button fullWidth mt="xl" type="submit">
           Reset password
@@ -50,10 +49,9 @@ const ForgetPassword = () => {
         mt="lg"
         component={Link}
         to="/auth/signin"
-        sx={{ display: "block" }}
+        sx={{ display: 'block' }}
       >
-        Remember it, <Anchor color="blue">send me back</Anchor> to sing in
-        screen
+        Remember it, <Anchor color="blue">send me back</Anchor> to sing in screen
       </Text>
     </>
   );

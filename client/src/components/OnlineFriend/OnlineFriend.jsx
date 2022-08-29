@@ -1,7 +1,6 @@
-import { Avatar, Indicator, Text } from "@mantine/core";
-import React from "react";
+import { Avatar, Indicator, Text } from '@mantine/core';
 
-import useStyles from "./OnlineFriend.styles.js";
+import useStyles from './OnlineFriend.styles';
 
 const OnlineFriend = ({ username, picture }) => {
   const { classes } = useStyles();

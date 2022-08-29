@@ -1,28 +1,28 @@
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import {
   AppShell,
-  Navbar,
-  Header,
-  Text,
-  useMantineTheme,
-  ScrollArea,
-  TextInput,
   Avatar,
-  Drawer,
-  Paper,
   Button,
-} from "@mantine/core";
-import OnlineFriend from "../../components/OnlineFriend/OnlineFriend.jsx";
-import Chat from "../../components/Chat/Chat.jsx";
-import NoChatSelected from "../../assets/images/noChatSelected.svg";
+  Drawer,
+  Header,
+  Navbar,
+  Paper,
+  ScrollArea,
+  Text,
+  TextInput,
+  useMantineTheme,
+} from '@mantine/core';
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import NoChatSelected from '../../assets/images/noChatSelected.svg';
+import Chat from '../../components/Chat/Chat';
+import OnlineFriend from '../../components/OnlineFriend/OnlineFriend';
 
-import useStyles from "./Messenger.styles.js";
-import { useSelector } from "react-redux";
+import useStyles from './Messenger.styles';
 
-import axiosInstance from "../../axios";
-import SideChats from "../../components/SideChats/SideChats.jsx";
-import { AppHeader, Profile } from "../../components";
+import axiosInstance from '../../axios';
+import { AppHeader, Profile } from '../../components';
+import SideChats from '../../components/SideChats/SideChats';
 
 export default function Messenger() {
   /**
@@ -36,7 +36,7 @@ export default function Messenger() {
   /**
    * Redux store states
    */
-  const { username, picture, _id, friends, reqSent, reqRecieved } = useSelector(
+  const { username, picture, _id, friends, reqSent, reqReceived } = useSelector(
     (store) => store.user.user
   );
 
@@ -44,71 +44,62 @@ export default function Messenger() {
    * Component core states
    */
   const [selectedChat, setSelectedChat] = useState(null);
-  const [searchedUsername, setSearchedUsername] = useState("");
+  const [searchedUsername, setSearchedUsername] = useState('');
 
   /**
    * fetching user based on username state
    */
-  const getUserByUsername = async (searchedUsername) => {
-    const { data } = await axiosInstance.get(
-      `/api/users?username=${searchedUsername}`
-    );
+  const getUserByUsername = async (searchedUserName) => {
+    const { data } = await axiosInstance.get(`/api/users?username=${searchedUserName}`);
     return data;
   };
 
   const { data: searchedUser } = useQuery(
-    ["user", searchedUsername],
+    ['user', searchedUsername],
     () => getUserByUsername(searchedUsername),
     {
-      enabled: searchedUsername !== "",
+      enabled: searchedUsername !== '',
     }
   );
 
   const getRelationship = (user) => {
     if (user?._id === _id) return <></>;
-    if (friends.includes(user?._id))
+    if (friends.includes(user?._id)) {
       return (
         <Button
           style={{
-            backgroundColor: "rgba(200, 0, 0, 0.5)",
-            color: "#fff",
+            backgroundColor: 'rgba(200, 0, 0, 0.5)',
+            color: '#fff',
           }}
         >
           Unfriend
         </Button>
       );
+    }
     if (reqSent.includes(user?._id)) return <Button>Cancel request</Button>;
-    if (reqRecieved.includes(user?._id))
+    if (reqReceived.includes(user?._id)) {
       return (
         <>
-          <Button style={{ backgroundColor: "green", color: "#fff" }}>
-            Accept
-          </Button>
+          <Button style={{ backgroundColor: 'green', color: '#fff' }}>Accept</Button>
           <Button
             style={{
-              backgroundColor: "rgba(200, 0, 0, 0.5)",
-              color: "#fff",
+              backgroundColor: 'rgba(200, 0, 0, 0.5)',
+              color: '#fff',
             }}
           >
             Refuse
           </Button>
         </>
       );
-    return (
-      <Button style={{ backgroundColor: "dodgerblue", color: "#fff" }}>
-        Add friend
-      </Button>
-    );
+    }
+    return <Button style={{ backgroundColor: 'dodgerblue', color: '#fff' }}>Add friend</Button>;
   };
 
   return (
     <AppShell
       styles={{
         main: {
-          background:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[8]
-              : theme.colors.gray[0],
+          background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
         },
       }}
       navbarOffsetBreakpoint="md"
@@ -128,7 +119,7 @@ export default function Messenger() {
             lg: 400,
 
             // When other breakpoints do not match base width is used, defaults to 100%
-            base: "70vw",
+            base: '70vw',
           }}
           hidden={!opened}
         >
@@ -139,7 +130,7 @@ export default function Messenger() {
                 src={picture.pictureURL}
                 size="md"
                 radius="xl"
-                style={{ marginRight: "10px" }}
+                style={{ marginRight: '10px' }}
               />
               <div>
                 <div>
@@ -149,7 +140,7 @@ export default function Messenger() {
                   <Text
                     size={12}
                     color="blue"
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: 'pointer' }}
                     onClick={() => setDrawerOpened(true)}
                   >
                     See profile
@@ -174,24 +165,16 @@ export default function Messenger() {
             <div className={classes.inputBox}>
               <TextInput
                 placeholder="Enter your message"
-                style={{ flex: 1, position: "relative" }}
+                style={{ flex: 1, position: 'relative' }}
                 value={searchedUsername}
                 onChange={(e) => setSearchedUsername(e.target.value)}
                 autoComplete="off"
               />
               {/* search result */}
-              {searchedUser && searchedUsername !== "" && (
+              {searchedUser && searchedUsername !== '' && (
                 <div>
-                  <Paper
-                    p={7}
-                    withBorder
-                    className={classes.inputBoxSearchResult}
-                  >
-                    <Avatar
-                      src={searchedUser?.picture?.pictureURL}
-                      size="md"
-                      radius="xl"
-                    />
+                  <Paper p={7} withBorder className={classes.inputBoxSearchResult}>
+                    <Avatar src={searchedUser?.picture?.pictureURL} size="md" radius="xl" />
                     <Text>{searchedUser?.username}</Text>
 
                     {/* action button(s) */}
@@ -203,7 +186,7 @@ export default function Messenger() {
 
             {/* Online Friends */}
             <div className={classes.onlineFriendsWrapper}>
-              <Text style={{ marginBottom: "15px" }}>Online friends</Text>
+              <Text style={{ marginBottom: '15px' }}>Online friends</Text>
               <div className={classes.onlineFriends}>
                 {new Array(4).fill(0).map((_, index) => (
                   <OnlineFriend

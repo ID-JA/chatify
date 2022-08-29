@@ -1,9 +1,8 @@
-import { useMantineTheme, Text, Avatar } from "@mantine/core";
-import React from "react";
-import { format } from "timeago.js";
+import { Avatar, Text, useMantineTheme } from '@mantine/core';
+import React from 'react';
+import { format } from 'timeago.js';
 
-// import "./ChatHeader.css";
-import useStyles from "./ChatHeader.styles.js";
+import useStyles from './ChatHeader.styles';
 
 const ChatHeader = ({ user }) => {
   const theme = useMantineTheme();
@@ -13,10 +12,7 @@ const ChatHeader = ({ user }) => {
       className={classes.ChatHeader}
       style={{
         main: {
-          background:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[8]
-              : theme.colors.gray[0],
+          background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
         },
       }}
     >
