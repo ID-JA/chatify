@@ -17,6 +17,9 @@ import { Link } from 'react-router-dom';
 import { Camera } from 'tabler-icons-react';
 import * as yup from 'yup';
 
+import { useMutation } from '@tanstack/react-query';
+import axiosInstance from '../../axios';
+
 import { GoogleButton, PasswordField } from '../../components';
 
 const validationSchema = yup.object().shape({
@@ -47,8 +50,15 @@ function SignUp() {
     setValue('picture', imgSrc);
   }
 
-  function onSubmit(e) {
-    console.log(e);
+  const mutation = useMutation((user) => axiosInstance.post('/api/auth/signup', user));
+  function onSubmit(user) {
+    const username = `${user.firstName} ${user.lastName}`;
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('email', user.email);
+    formData.append('password', user.password);
+    formData.append('picture', user.picture);
+    mutation.mutate(formData);
   }
 
   return (
@@ -115,7 +125,7 @@ function SignUp() {
         {...register('password')}
       />
 
-      <Button fullWidth mt="md" type="submit">
+      <Button fullWidth mt="md" type="submit" loading={mutation.isLoading}>
         Sign up
       </Button>
 

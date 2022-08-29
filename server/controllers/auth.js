@@ -32,6 +32,8 @@ const signup = async (req, res, next) => {
       folder: "users_pictures",
     });
 
+    console.log("after cloudinary");
+
     user = new User({
       username,
       email,
@@ -51,9 +53,7 @@ const signup = async (req, res, next) => {
       OTP: otp,
     });
 
-    return res.json({
-      message: "Check out your email to confirm your account",
-    });
+    return res.redirect(`${process.env.CLIENT_URL}/auth/signin`);
   } catch (error) {
     if (result !== null && result !== undefined) {
       await cloudinary.uploader.destroy(result?.picture.publicID);
