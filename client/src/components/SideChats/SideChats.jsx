@@ -5,9 +5,9 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import axiosInstance from '../../axios';
-import SideChat from '../SideChat/SideChat';
+import { SideChat } from '../SideChat/SideChat';
 
-const SideChats = ({ setSelectedChat }) => {
+export const SideChats = ({ setSelectedChat }) => {
   /**
    * Redux store states
    */
@@ -36,5 +36,3 @@ const SideChats = ({ setSelectedChat }) => {
     </>
   );
 };
-
-export default SideChats;

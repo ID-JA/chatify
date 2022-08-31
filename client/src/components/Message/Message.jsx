@@ -2,10 +2,9 @@ import { Avatar, Text, Tooltip } from '@mantine/core';
 import React from 'react';
 import { format } from 'timeago.js';
 
-// import "./Message.css";
 import useStyles from './Message.styles';
 
-const Message = ({ message, own, user }) => {
+export const Message = ({ message, own, user }) => {
   const { classes, cx } = useStyles();
 
   return (
@@ -32,5 +31,3 @@ const Message = ({ message, own, user }) => {
     </div>
   );
 };
-
-export default Message;

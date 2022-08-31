@@ -15,14 +15,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import NoChatSelected from '../../assets/images/noChatSelected.svg';
-import Chat from '../../components/Chat/Chat';
-import OnlineFriend from '../../components/OnlineFriend/OnlineFriend';
 
 import useStyles from './Messenger.styles';
 
 import axiosInstance from '../../axios';
-import { AppHeader, Profile } from '../../components';
-import SideChats from '../../components/SideChats/SideChats';
+import { AppHeader, Profile, Chat, OnlineFriend, SideChats } from '../../components';
 
 export default function Messenger() {
   /**

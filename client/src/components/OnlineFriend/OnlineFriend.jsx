@@ -2,7 +2,7 @@ import { Avatar, Indicator, Text } from '@mantine/core';
 
 import useStyles from './OnlineFriend.styles';
 
-const OnlineFriend = ({ username, picture }) => {
+export const OnlineFriend = ({ username, picture }) => {
   const { classes } = useStyles();
 
   return (
@@ -14,5 +14,3 @@ const OnlineFriend = ({ username, picture }) => {
     </div>
   );
 };
-
-export default OnlineFriend;

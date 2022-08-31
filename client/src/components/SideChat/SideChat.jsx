@@ -5,7 +5,7 @@ import { format } from 'timeago.js';
 import axiosInstance from '../../axios';
 import useStyles from './SideChat.styles';
 
-const SideChat = ({ conversation, currentUserID }) => {
+export const SideChat = ({ conversation, currentUserID }) => {
   const { classes } = useStyles();
   const { createdAt, lastMessage, users } = conversation;
 
@@ -37,5 +37,3 @@ const SideChat = ({ conversation, currentUserID }) => {
     </div>
   );
 };
-
-export default SideChat;

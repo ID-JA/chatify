@@ -4,7 +4,7 @@ import { format } from 'timeago.js';
 
 import useStyles from './ChatHeader.styles';
 
-const ChatHeader = ({ user }) => {
+export const ChatHeader = ({ user }) => {
   const theme = useMantineTheme();
   const { classes } = useStyles();
   return (
@@ -28,5 +28,3 @@ const ChatHeader = ({ user }) => {
     </div>
   );
 };
-
-export default ChatHeader;

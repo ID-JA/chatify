@@ -1,15 +1,15 @@
 import { Paper, TextInput } from '@mantine/core';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import Message from '../Message/Message';
+import { Message } from '../Message/Message';
 import useStyles from './Chat.styles';
-import ChatHeader from './ChatHeader';
+import { ChatHeader } from './ChatHeader';
 
 import axiosInstance from '../../axios';
 
 // import "./Chat.css";
 
-const Chat = ({ chat }) => {
+export const Chat = ({ chat }) => {
   const { classes } = useStyles();
   const scrollRef = useRef();
   const { _id } = useSelector((store) => store.user.user);
@@ -96,5 +96,3 @@ const Chat = ({ chat }) => {
     </Paper>
   );
 };
-
-export default Chat;

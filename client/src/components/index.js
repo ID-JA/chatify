@@ -3,3 +3,8 @@ export * from './PasswordField';
 export * from './SocialButtons';
 export * from './AppHeader';
 export * from './Profile';
+export * from './Chat';
+export * from './Message';
+export * from './OnlineFriend';
+export * from './SideChat';
+export * from './SideChats';
