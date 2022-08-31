@@ -3,7 +3,14 @@ import { useLocalStorage } from '@mantine/hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { AuthLayout, ForgetPassword, ResetPassword, SignIn, SignUp } from './pages/auth';
+import {
+  AuthLayout,
+  ForgetPassword,
+  ResetPassword,
+  SignIn,
+  SignUp,
+  Confirmation,
+} from './pages/auth';
 import Messenger from './pages/messenger/Messenger';
 import { DEFAULT_THEME, MyGlobalStyle } from './theme';
 
@@ -30,6 +37,7 @@ function App() {
                 <Route path="forget-password" element={<ForgetPassword />} />
                 <Route path="signin" element={<SignIn />} />
                 <Route path="signup" element={<SignUp />} />
+                <Route path="confirmation" element={<Confirmation />} />
                 <Route path="reset-password" element={<ResetPassword />} />
               </Route>
               <Route path="/messenger" element={<Messenger />} />

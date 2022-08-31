@@ -28,20 +28,22 @@ const signup = async (req, res, next) => {
     }
 
     // SAVE PICTURE TO CLOUDINARY
-    const cloudinaryResult = await cloudinary.uploader.upload(req.file.path, {
-      folder: "users_pictures",
-    });
-
-    console.log("after cloudinary");
+    if (req.file) {
+      var cloudinaryResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: "users_pictures",
+      });
+    }
 
     user = new User({
       username,
       email,
       password,
-      picture: {
-        publicID: cloudinaryResult.public_id,
-        pictureURL: cloudinaryResult.url,
-      },
+      picture: req.file
+        ? {
+            publicID: cloudinaryResult.public_id,
+            pictureURL: cloudinaryResult.url,
+          }
+        : null,
     });
     var result = await user.save();
 
@@ -53,7 +55,7 @@ const signup = async (req, res, next) => {
       OTP: otp,
     });
 
-    return res.redirect(`${process.env.CLIENT_URL}/auth/signin`);
+    return res.json({ message: `A confirmation email has been sent to you!` });
   } catch (error) {
     if (result !== null && result !== undefined) {
       await cloudinary.uploader.destroy(result?.picture.publicID);
@@ -84,11 +86,12 @@ const confirmAccount = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { _id, isConfirmed } = req.user;
-    if (!isConfirmed) throw new Error("Please confirm your account!");
+    const { password, OTP, isConfirmed, __v, ...others } = req.user._doc;
+    if (!isConfirmed)
+      throw ApiError.CustomError(401, "Please confirm your account!");
     const accessToken = jwt.sign(
       {
-        userID: _id,
+        userID: others._id,
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
@@ -97,7 +100,7 @@ const login = async (req, res, next) => {
     );
     const refreshToken = jwt.sign(
       {
-        userID: _id,
+        userID: others._id,
       },
       process.env.REFRESH_TOKEN_SECRET,
       {
@@ -105,9 +108,10 @@ const login = async (req, res, next) => {
       }
     );
 
-    res.json({ user: req.user, accessToken, refreshToken });
-  } catch (error) {
-    next(error);
+    res.json({ ...others, accessToken, refreshToken });
+  } catch (e) {
+    next(e);
+    // return res.status(e.statusCode).json({ message: e.message });
   }
 };
 

@@ -13,11 +13,11 @@ import {
 
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Camera } from 'tabler-icons-react';
 import * as yup from 'yup';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, QueryClient } from '@tanstack/react-query';
 import axiosInstance from '../../axios';
 
 import { GoogleButton, PasswordField } from '../../components';
@@ -31,6 +31,7 @@ const validationSchema = yup.object().shape({
 });
 
 function SignUp() {
+  const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const fileInputRef = useRef(null);
   const methods = useForm({
@@ -50,7 +51,11 @@ function SignUp() {
     setValue('picture', imgSrc);
   }
 
-  const mutation = useMutation((user) => axiosInstance.post('/api/auth/signup', user));
+  const mutation = useMutation((user) => axiosInstance.post('/api/auth/signup', user), {
+    onSuccess: () => {
+      navigate('/auth/confirmation');
+    },
+  });
   function onSubmit(user) {
     const username = `${user.firstName} ${user.lastName}`;
     const formData = new FormData();

@@ -1,24 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-  Button,
-  Checkbox,
-  Group,
-  Notification,
-  PasswordInput,
-  Text,
-  TextInput,
-} from '@mantine/core';
-import { IconCheck, IconX } from '@tabler/icons';
+import { Button, Checkbox, Group, PasswordInput, Text, TextInput } from '@mantine/core';
 
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
-import { useDispatch } from 'react-redux';
-import { unwrapResult } from '@reduxjs/toolkit';
 import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
-import { signin } from '../../redux/userSlice';
 import axiosInstance from '../../axios';
 
 const validationSchema = yup.object().shape({
@@ -27,10 +14,7 @@ const validationSchema = yup.object().shape({
   rememberMe: yup.bool(),
 });
 
-function SignIn() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [apiError, setApiError] = useState(null);
+function Confirmation() {
   const methods = useForm({
     resolver: yupResolver(validationSchema),
   });
@@ -41,28 +25,15 @@ function SignIn() {
     formState: { errors },
   } = methods;
 
-  const onSubmit = async (user) => {
-    dispatch(signin(user))
-      .then(unwrapResult)
-      .then(() => {
-        // console.log(res);
-        navigate('/messenger');
-      })
-      .catch((e) => {
-        // console.log(e);
-        setApiError(e);
-      });
+  const mutation = useMutation((user) => axiosInstance.post('/api/auth/login', user));
+  const onSubmit = (user) => {
+    mutation.mutate(user);
   };
 
   return (
     <>
-      {apiError && (
-        <Notification mb={20} color={apiError.color} onClose={() => setApiError(null)}>
-          {apiError.message}
-        </Notification>
-      )}
       <Text size="lg" weight={500} align="center" mb="xl">
-        Sign in
+        Please enter the OTP
       </Text>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextInput
@@ -88,7 +59,7 @@ function SignIn() {
             Forgot password
           </Text>
         </Group>
-        <Button type="submit" fullWidth>
+        <Button type="submit" fullWidth loading={mutation.isLoading}>
           Sign in
         </Button>
         <Text mt="lg" align="center" size="sm">
@@ -99,4 +70,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default Confirmation;

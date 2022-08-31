@@ -1,25 +1,33 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '../axios';
+
+const namespace = 'user';
+
+export const signin = createAsyncThunk(`${namespace}/signin`, async (user, { rejectWithValue }) => {
+  try {
+    const { data } = await axiosInstance.post('/api/auth/login', user);
+    return data;
+  } catch (error) {
+    return typeof error.response.data === 'object'
+      ? rejectWithValue({ message: error.response?.data?.message, color: 'yellow' })
+      : rejectWithValue({ message: 'Incorrect email or password', color: 'red' });
+  }
+});
 
 const initialState = {
-  user: {
-    _id: '62fbb6eb8c7d73173af33466',
-    username: 'Achraffawzi',
-    email: 'achraf.fawzi.a@gmail.com',
-    picture: {
-      publicID: 'zdpxjybavwafdjtjqwqg',
-      pictureURL:
-        'https://res.cloudinary.com/dihdy1u2d/image/upload/v1660663533/users_pictures/zdpxjybavwafdjtjqwqg.jpg',
-    },
-    friends: ['62fa765f67cc679a5dfb3c1e'],
-    reqSent: [],
-    reqRecieved: [],
-  },
+  user: null,
 };
 
 const userSlice = createSlice({
-  name: 'user',
+  name: namespace,
   initialState,
   reducers: {},
+  extraReducers: {
+    [signin.fulfilled]: (state, { payload }) => {
+      // eslint-disable-next-line no-param-reassign
+      state.user = payload;
+    },
+  },
 });
 
 export default userSlice.reducer;
