@@ -1,8 +1,15 @@
 import axios from 'axios';
 
-// export const cancelTokenSource = axios.CancelToken.source();
-
-export default axios.create({
+const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URI,
-  // cancelToken: cancelTokenSource.token,
 });
+
+// Set the AUTH token for any request
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem('jwt');
+  // eslint-disable-next-line no-param-reassign
+  config.headers.Authorization = token ? `Bearer ${token}` : '';
+  return config;
+});
+
+export default axiosInstance;

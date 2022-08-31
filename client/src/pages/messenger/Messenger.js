@@ -62,6 +62,10 @@ export default function Messenger() {
     }
   );
 
+  /**
+   * get the relationship between current user and searched user
+   * (friend, reqSent, reqRecieved, stranger)
+   */
   const getRelationship = (user) => {
     if (user?._id === _id) return <></>;
     if (friends.includes(user?._id)) {

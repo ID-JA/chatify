@@ -8,7 +8,6 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
-import { IconCheck, IconX } from '@tabler/icons';
 
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -16,10 +15,8 @@ import * as yup from 'yup';
 
 import { useDispatch } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { signin } from '../../redux/userSlice';
-import axiosInstance from '../../axios';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email().required('Email address is required'),
@@ -41,17 +38,16 @@ function SignIn() {
     formState: { errors },
   } = methods;
 
-  const onSubmit = async (user) => {
+  const onSubmit = (user) => {
     dispatch(signin(user))
       .then(unwrapResult)
-      .then(() => {
-        // console.log(res);
+      .then((res) => {
+        // store token in LS
+        if (localStorage.getItem('jwt')) localStorage.removeItem('jwt');
+        localStorage.setItem('jwt', res.accessToken);
         navigate('/messenger');
       })
-      .catch((e) => {
-        // console.log(e);
-        setApiError(e);
-      });
+      .catch((e) => setApiError(e));
   };
 
   return (
