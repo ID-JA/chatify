@@ -21,7 +21,17 @@ const initialState = {
 const userSlice = createSlice({
   name: namespace,
   initialState,
-  reducers: {},
+  reducers: {
+    updateUser: (state, { payload }) => {
+      // eslint-disable-next-line no-param-reassign
+      state.user = { ...state.user, [payload.name]: [payload.value] };
+    },
+    cancelFriendRequest: (state, { payload }) => {
+      const reqSent = state.user.reqSent.filter((req) => req._id !== payload._id);
+      // eslint-disable-next-line no-param-reassign
+      state.user = { ...state.user, reqSent };
+    },
+  },
   extraReducers: {
     [signin.fulfilled]: (state, { payload }) => {
       // eslint-disable-next-line no-param-reassign
@@ -30,4 +40,5 @@ const userSlice = createSlice({
   },
 });
 
+export const { updateUser, cancelFriendRequest } = userSlice.actions;
 export default userSlice.reducer;

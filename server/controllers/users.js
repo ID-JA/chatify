@@ -50,7 +50,7 @@ const sendFriendReq = async (req, res, next) => {
       $push: { reqSent: to },
     });
 
-    await User.findByIdAndUpdate(to, {
+    const reciever = await User.findByIdAndUpdate(to, {
       $push: { reqRecieved: from },
     });
 
@@ -58,7 +58,7 @@ const sendFriendReq = async (req, res, next) => {
      * todo: handle socket.io to send notification to "to" user
      */
 
-    res.status(200).json({ message: "Friend request sent" });
+    res.status(200).json(reciever);
   } catch (err) {
     next(err);
   }
@@ -112,6 +112,24 @@ const refuseFriendReq = async (req, res, next) => {
   }
 };
 
+const cancelFriendRequest = async (req, res, next) => {
+  try {
+    const { from, to } = req.body;
+
+    await User.findByIdAndUpdate(from, {
+      $pull: { reqSent: to },
+    });
+
+    await User.findByIdAndUpdate(to, {
+      $pull: { reqRecieved: from },
+    });
+
+    res.status(200).json({ message: "Friend request cancelled" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const removeFriend = async (req, res, next) => {
   try {
     const { from, to } = req.body;
@@ -137,4 +155,5 @@ module.exports = {
   acceptFriendReq,
   refuseFriendReq,
   removeFriend,
+  cancelFriendRequest,
 };

@@ -4,6 +4,7 @@ import {
   Button,
   Drawer,
   Header,
+  Loader,
   Navbar,
   Paper,
   ScrollArea,
@@ -11,9 +12,10 @@ import {
   TextInput,
   useMantineTheme,
 } from '@mantine/core';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUser, cancelFriendRequest } from '../../redux/userSlice';
 import NoChatSelected from '../../assets/images/noChatSelected.svg';
 
 import useStyles from './Messenger.styles';
@@ -33,15 +35,25 @@ export default function Messenger() {
   /**
    * Redux store states
    */
-  const { username, picture, _id, friends, reqSent, reqReceived } = useSelector(
+  const { _id, username, picture, friends, reqSent, reqRecieved } = useSelector(
     (store) => store.user.user
   );
+  const dispatch = useDispatch();
 
   /**
    * Component core states
    */
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchedUsername, setSearchedUsername] = useState('');
+
+  /**
+   * Getting user info
+   */
+  // const getUser = async (id) => {
+  //   const { data } = await axiosInstance.get(`/api/users?userID=${id}`);
+  //   return data;
+  // };
+  // const { data:  = useQuery(['getCurrentUser', _id], getUser(_id));
 
   /**
    * fetching user based on username state
@@ -51,13 +63,49 @@ export default function Messenger() {
     return data;
   };
 
-  const { data: searchedUser } = useQuery(
+  const { data: searchedUser, isLoading } = useQuery(
     ['user', searchedUsername],
     () => getUserByUsername(searchedUsername),
     {
       enabled: searchedUsername !== '',
     }
   );
+
+  /**
+   * Add new friend handler
+   */
+  const mutation = useMutation((payload) => axiosInstance.post('/api/users/sendRequest', payload));
+  const handleAddFriend = () => {
+    mutation.mutate(
+      { from: _id, to: searchedUser._id },
+      {
+        onSuccess: ({ data }) => {
+          console.log(data?.message);
+          // update user store
+          dispatch(updateUser({ name: 'reqSent', value: searchedUser._id }));
+        },
+      }
+    );
+  };
+
+  /**
+   * cancel friend request handler
+   */
+  const mutation_cancelFriendRequest = useMutation((payload) =>
+    axiosInstance.post('/api/users/cancelfriendrequest', payload)
+  );
+  const handleCancelFriendRequest = () => {
+    mutation_cancelFriendRequest.mutate(
+      { from: _id, to: searchedUser._id },
+      {
+        onSuccess: () => {
+          //  console.log(data?.message);
+          // update user store
+          dispatch(cancelFriendRequest(searchedUser._id));
+        },
+      }
+    );
+  };
 
   /**
    * get the relationship between current user and searched user
@@ -77,8 +125,10 @@ export default function Messenger() {
         </Button>
       );
     }
-    if (reqSent.includes(user?._id)) return <Button>Cancel request</Button>;
-    if (reqReceived.includes(user?._id)) {
+    if (reqSent.includes(user?._id)) {
+      return <Button onClick={handleCancelFriendRequest}>Cancel request</Button>;
+    }
+    if (reqRecieved.includes(user?._id)) {
       return (
         <>
           <Button style={{ backgroundColor: 'green', color: '#fff' }}>Accept</Button>
@@ -93,7 +143,11 @@ export default function Messenger() {
         </>
       );
     }
-    return <Button style={{ backgroundColor: 'dodgerblue', color: '#fff' }}>Add friend</Button>;
+    return (
+      <Button style={{ backgroundColor: 'dodgerblue', color: '#fff' }} onClick={handleAddFriend}>
+        Add friend
+      </Button>
+    );
   };
 
   return (
@@ -175,6 +229,7 @@ export default function Messenger() {
               {searchedUser && searchedUsername !== '' && (
                 <div>
                   <Paper p={7} withBorder className={classes.inputBoxSearchResult}>
+                    {isLoading && <Loader />}
                     <Avatar src={searchedUser?.picture?.pictureURL} size="md" radius="xl" />
                     <Text>{searchedUser?.username}</Text>
 

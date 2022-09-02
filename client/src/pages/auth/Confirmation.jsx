@@ -33,7 +33,7 @@ function Confirmation() {
   return (
     <>
       <Text size="lg" weight={500} align="center" mb="xl">
-        Please enter the OTP
+        Please enter the OTP sent to your email
       </Text>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextInput
